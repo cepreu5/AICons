@@ -65,7 +65,7 @@ exports.handler = async (event, context) => {
 
         // 3. Извикване на Gemini API
         console.log('🚀 [BACKEND STEP 3] Изпращане към Gemini API...');
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY}`;
         
         const geminiRes = await fetch(geminiUrl, {
             method: 'POST',
