@@ -1,0 +1,9 @@
+# Local Netlify folder
+/.netlify/
+
+# Environment variables file
+# Contains secret keys, do not commit to Git!
+.env
+
+# Node.js dependencies
+/node_modules
