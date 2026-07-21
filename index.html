@@ -97,55 +97,123 @@
         });
     }
 
-    document.getElementById('fuelForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
+document.getElementById('fuelForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const statusBox = document.getElementById('statusBox');
+    
+    submitBtn.disabled = true;
+    statusBox.className = 'status info';
+    statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
+
+    try {
+        console.log('🔍 [FRONTEND STEP 1] Четене и компресиране на снимките...');
+        const odomFile = document.getElementById('odometer').files[0];
+        const receFile = document.getElementById('receipt').files[0];
+
+        const odomCompressed = await compressImage(odomFile);
+        const receCompressed = await compressImage(receFile);
+        console.log('✅ [FRONTEND STEP 1] Снимките са компресирани успешно.');
+
+        const payload = {
+            password: document.getElementById('password').value,
+            vehicle: document.getElementById('vehicle').value,
+            odometerImage: odomCompressed,
+            receiptImage: receCompressed
+        };
+
+        console.log('🔍 [FRONTEND STEP 2] Изпращане на заявка към Netlify Function...');
         
-        const submitBtn = document.getElementById('submitBtn');
-        const statusBox = document.getElementById('statusBox');
-        
-        submitBtn.disabled = true;
-        statusBox.className = 'status info';
-        statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
+        const response = await fetch('/.netlify/functions/process-fuel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-        try {
-            const odomFile = document.getElementById('odometer').files[0];
-            const receFile = document.getElementById('receipt').files[0];
+        console.log(`🌐 [FRONTEND STEP 3] Получен HTTP Статус от Netlify: ${response.status} ${response.statusText}`);
 
-            // Компресиране на двете снимки
-            const odomCompressed = await compressImage(odomFile);
-            const receCompressed = await compressImage(receFile);
+        // Вземаме суровия текст, за да не гърми с "Unexpected end of JSON input"
+        const rawText = await response.text();
+        console.log('📄 [FRONTEND STEP 4] Суров отговор от Netlify:', rawText);
 
-            const payload = {
-                password: document.getElementById('password').value,
-                vehicle: document.getElementById('vehicle').value,
-                odometerImage: odomCompressed,
-                receiptImage: receCompressed
-            };
-
-            // Извикваме Serverless функцията на Netlify
-            const response = await fetch('/.netlify/functions/process-fuel', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || 'Възникна грешка при обработката.');
-            }
-
-            statusBox.className = 'status info';
-            statusBox.innerHTML = `✅ Успешно записване!<br>Намерен разход: <b>${result.consumption || 'Изчислен'} л/100км</b>`;
-            document.getElementById('fuelForm').reset();
-
-        } catch (err) {
-            statusBox.className = 'status error';
-            statusBox.innerText = '❌ Грешка: ' + err.message;
-        } finally {
-            submitBtn.disabled = false;
+        if (!rawText) {
+            throw new Error(`Сървърът върна напълно празен отговор (Status: ${response.status})`);
         }
-    });
+
+        let result;
+        try {
+            result = JSON.parse(rawText);
+        } catch (jsonErr) {
+            throw new Error(`Отговорът не е валиден JSON! Суров текст: "${rawText.substring(0, 150)}..."`);
+        }
+
+        if (!response.ok) {
+            throw new Error(result.error || `Сървърна грешка (Status ${response.status})`);
+        }
+
+        statusBox.className = 'status info';
+        statusBox.innerHTML = `✅ Успешно записване!<br>Намерен разход: <b>${result.consumption || 'Изчислен'} л/100км</b>`;
+        document.getElementById('fuelForm').reset();
+
+    } catch (err) {
+        console.error('❌ [FRONTEND ERROR]:', err);
+        statusBox.className = 'status error';
+        statusBox.innerText = '❌ Грешка: ' + err.message;
+    } finally {
+        submitBtn.disabled = false;
+    }
+});
+
+    // document.getElementById('fuelForm').addEventListener('submit', async (e) => {
+    //     e.preventDefault();
+        
+    //     const submitBtn = document.getElementById('submitBtn');
+    //     const statusBox = document.getElementById('statusBox');
+        
+    //     submitBtn.disabled = true;
+    //     statusBox.className = 'status info';
+    //     statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
+
+    //     try {
+    //         const odomFile = document.getElementById('odometer').files[0];
+    //         const receFile = document.getElementById('receipt').files[0];
+
+    //         // Компресиране на двете снимки
+    //         const odomCompressed = await compressImage(odomFile);
+    //         const receCompressed = await compressImage(receFile);
+
+    //         const payload = {
+    //             password: document.getElementById('password').value,
+    //             vehicle: document.getElementById('vehicle').value,
+    //             odometerImage: odomCompressed,
+    //             receiptImage: receCompressed
+    //         };
+
+    //         // Извикваме Serverless функцията на Netlify
+    //         const response = await fetch('/.netlify/functions/process-fuel', {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify(payload)
+    //         });
+
+    //         const result = await response.json();
+
+    //         if (!response.ok) {
+    //             throw new Error(result.error || 'Възникна грешка при обработката.');
+    //         }
+
+    //         statusBox.className = 'status info';
+    //         statusBox.innerHTML = `✅ Успешно записване!<br>Намерен разход: <b>${result.consumption || 'Изчислен'} л/100км</b>`;
+    //         document.getElementById('fuelForm').reset();
+
+    //     } catch (err) {
+    //         statusBox.className = 'status error';
+    //         statusBox.innerText = '❌ Грешка: ' + err.message;
+    //     } finally {
+    //         submitBtn.disabled = false;
+    //     }
+    // });
 </script>
 
 </body>
