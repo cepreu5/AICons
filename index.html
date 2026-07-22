@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="bg">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +20,7 @@
             --status-error-bg: #fce4d6;
             --status-error-text: #c65911;
         }
+
         [data-theme="dark"] {
             --bg-color: #121212;
             --container-bg: #1e1e1e;
@@ -32,10 +34,37 @@
             --status-error-bg: #c65911;
             --status-error-text: #fce4d6;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: var(--bg-color); margin: 0; padding: 20px; color: var(--text-color); transition: background 0.3s, color 0.3s; }
-        .container { max-width: 450px; margin: 0 auto; background: var(--container-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); position: relative; }
-        h1 { font-size: 20px; text-align: center; margin-top: 0; color: var(--heading-color); }
-        .form-group { margin-bottom: 18px; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 20px;
+            text-align: center;
+            margin-top: 0;
+            color: var(--heading-color);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
         .group-box {
             border: 1px solid var(--border-color);
             border-radius: 10px;
@@ -43,6 +72,7 @@
             margin-bottom: 18px;
             background-color: var(--input-bg);
         }
+
         .group-title {
             font-weight: 700;
             font-size: 15px;
@@ -50,36 +80,116 @@
             color: var(--heading-color);
             display: block;
         }
-        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-        input[type="text"], input[type="password"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; box-sizing: border-box; background-color: var(--container-bg); color: var(--text-color); }
-        button { width: 100%; padding: 14px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        button:disabled { background: #6c757d; cursor: not-allowed; }
-        .status { margin-top: 15px; padding: 12px; border-radius: 6px; font-size: 14px; display: none; text-align: center; }
-        .status.info { background: var(--status-info-bg); color: var(--status-info-text); display: block; }
-        .status.error { background: var(--status-error-bg); color: var(--status-error-text); display: block; }
-        .theme-switcher { position: absolute; top: 15px; right: 15px; }
-        .theme-switcher label { display: flex; align-items: center; cursor: pointer; }
-        .theme-switcher .toggle-switch { position: relative; width: 40px; height: 26px; background-color: #007bff; border-radius: 13px; transition: background-color 0.3s; }
-        .theme-switcher .toggle-switch::before { 
-            content: ''; 
-            position: absolute; 
-            top: 2px; 
-            left: 2px; 
-            width: 22px; 
-            height: 22px; 
-            border-radius: 50%; 
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+            text-align: center;
+        }
+
+        .status.info {
+            background: var(--status-info-bg);
+            color: var(--status-info-text);
+            display: block;
+        }
+
+        .status.error {
+            background: var(--status-error-bg);
+            color: var(--status-error-text);
+            display: block;
+        }
+
+        .theme-switcher {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .theme-switcher label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .theme-switcher .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 26px;
+            background-color: #007bff;
+            border-radius: 13px;
+            transition: background-color 0.3s;
+        }
+
+        .theme-switcher .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
             transition: transform 0.3s, background-image 0.3s;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='orange' stroke='white' stroke-width='1'%3E%3Ccircle cx='12' cy='12' r='5'%3E%3C/circle%3E%3Cline x1='12' y1='1' x2='12' y2='3'%3E%3C/line%3E%3Cline x1='12' y1='21' x2='12' y2='23'%3E%3C/line%3E%3Cline x1='4.22' y1='4.22' x2='5.64' y2='5.64'%3E%3C/line%3E%3Cline x1='18.36' y1='18.36' x2='19.78' y2='19.78'%3E%3C/line%3E%3Cline x1='1' y1='12' x2='3' y2='12'%3E%3C/line%3E%3Cline x1='21' y1='12' x2='23' y2='12'%3E%3C/line%3E%3Cline x1='4.22' y1='19.78' x2='5.64' y2='18.36'%3E%3C/line%3E%3Cline x1='18.36' y1='5.64' x2='19.78' y2='4.22'%3E%3C/line%3E%3C/svg%3E");
             background-size: 16px;
             background-position: center;
             background-repeat: no-repeat;
         }
-        .theme-switcher input { display: none; }
-        .theme-switcher input:checked + .toggle-switch { background-color: #2c2c54; }
-        .theme-switcher input:checked + .toggle-switch::before { 
-            transform: translateX(14px); 
+
+        .theme-switcher input {
+            display: none;
+        }
+
+        .theme-switcher input:checked+.toggle-switch {
+            background-color: #2c2c54;
+        }
+
+        .theme-switcher input:checked+.toggle-switch::before {
+            transform: translateX(14px);
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='gold'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'%3E%3C/path%3E%3C/svg%3E");
         }
+
         .upload-status {
             width: 0;
             height: 40px;
@@ -87,6 +197,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .upload-status img {
             width: 40px;
             height: 40px;
@@ -97,11 +208,13 @@
             background-color: var(--container-bg);
             cursor: pointer;
         }
+
         .file-input-container {
             display: flex;
             align-items: center;
             gap: 6px;
         }
+
         .select-btn {
             flex: 1;
             padding: 10px 4px;
@@ -118,6 +231,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .pin-icon {
             font-size: 12px;
             margin-left: 4px;
@@ -128,25 +242,30 @@
             transition: opacity 0.2s, border-color 0.2s;
             cursor: pointer;
         }
+
         .pin-icon.active {
             opacity: 1;
             border: 1.5px solid #28a745;
             background-color: transparent;
         }
+
         .vehicle-select-container {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         #vehicle {
             flex-grow: 1;
         }
+
         #pinVehicleBtn {
             width: 40px;
             flex-shrink: 0;
             padding: 10px;
             background-color: var(--border-color);
         }
+
         .delete-btn {
             width: 40px;
             flex-shrink: 0;
@@ -154,25 +273,40 @@
             background-color: var(--border-color);
             color: var(--text-color);
         }
+
         .modal-overlay {
-            position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-            overflow: auto; background-color: rgba(0,0,0,0.85); display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none;
             touch-action: none;
         }
+
         .modal-content {
-            position: absolute; top: 50%; left: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
             max-width: 90vw;
             max-height: 75vh;
             user-select: none;
         }
+
         #crop-box {
             position: absolute;
             border: 2px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
             cursor: move;
             touch-action: none;
+            min-width: 100px;
+            min-height: 100px;
         }
+
         .handle {
             position: absolute;
             width: 20px;
@@ -180,42 +314,79 @@
             background-color: #007bff;
             border: 2px solid #fff;
             border-radius: 50%;
-            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
             z-index: 10;
             touch-action: none;
         }
-        .handle.tl { top: -10px; left: -10px; cursor: nwse-resize; }
-        .handle.tr { top: -10px; right: -10px; cursor: nesw-resize; }
-        .handle.bl { bottom: -10px; left: -10px; cursor: nesw-resize; }
-        .handle.br { bottom: -10px; right: -10px; cursor: nwse-resize; }
-        #cropBtn {
-            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            width: auto; padding: 12px 24px;
+
+        .handle.tl {
+            top: -10px;
+            left: -10px;
+            cursor: nwse-resize;
         }
+
+        .handle.tr {
+            top: -10px;
+            right: -10px;
+            cursor: nesw-resize;
+        }
+
+        .handle.bl {
+            bottom: -10px;
+            left: -10px;
+            cursor: nesw-resize;
+        }
+
+        .handle.br {
+            bottom: -10px;
+            right: -10px;
+            cursor: nwse-resize;
+        }
+
+        #cropBtn {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            padding: 12px 24px;
+        }
+
         .modal-close {
-            position: absolute; top: 15px; right: 35px; color: #f1f1f1;
-            font-size: 40px; font-weight: bold; cursor: pointer;
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
             z-index: 101;
         }
+
         .action-buttons-container {
             display: none;
             margin-top: 15px;
             gap: 10px;
         }
+
         .action-buttons-container button {
             flex: 1;
         }
+
         #closeBtn {
             background-color: #6c757d;
         }
-        #reloadBtn { 
-            background-color: #007bff; 
+
+        #reloadBtn {
+            background-color: #007bff;
         }
+
         #viewHistoryBtn {
             display: none;
             margin-top: 12px;
             background-color: #6c757d;
         }
+
         .history-nav {
             display: flex;
             justify-content: space-between;
@@ -224,18 +395,25 @@
             border-top: 1px solid var(--border-color);
             padding-top: 10px;
         }
+
         .history-nav button {
             width: 50px;
             padding: 8px;
             font-size: 20px;
             background-color: var(--border-color);
         }
-        #historyCounter { font-size: 14px; color: var(--text-color); }
+
+        #historyCounter {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
         .manual-inputs-grid {
             display: flex;
             gap: 8px;
             margin-top: 8px;
         }
+
         .manual-inputs-grid input {
             padding: 8px;
             font-size: 13px;
@@ -243,605 +421,691 @@
     </style>
     <script src="vehicles.js"></script>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="theme-switcher">
-        <label for="themeToggle">
-            <input type="checkbox" id="themeToggle">
-            <span class="toggle-switch"></span>
-        </label>
+    <div class="container">
+        <div class="theme-switcher">
+            <label for="themeToggle">
+                <input type="checkbox" id="themeToggle">
+                <span class="toggle-switch"></span>
+            </label>
+        </div>
+        <h1 id="mainTitle">⛽ Зареждане на гориво</h1>
+
+        <form id="fuelForm">
+            <input type="hidden" id="password" value="123">
+
+            <div class="form-group">
+                <label for="vehicle">🚗 Автомобил:</label>
+                <div class="vehicle-select-container">
+                    <select id="vehicle">
+                    </select>
+                    <button type="button" id="pinVehicleBtn" title="Запази като избор по подразбиране">📌</button>
+                </div>
+            </div>
+
+            <div class="group-box">
+                <label class="group-title">📸 Километраж:</label>
+                <div class="file-input-container">
+                    <span id="odomStatus" class="upload-status"></span>
+                    <input type="file" id="odometerCam" accept="image/*" capture="environment" style="display:none;">
+                    <input type="file" id="odometerFile" accept="image/*" style="display:none;">
+                    <button type="button" class="select-btn" onclick="document.getElementById('odometerCam').click()">
+                        📷 Камера <span class="pin-icon" id="pin_odomCam"
+                            onclick="event.stopPropagation(); pinAutoTrigger('odomCam')"
+                            title="Автоматично отваряне при старт">📌</span>
+                    </button>
+                    <button type="button" class="select-btn" onclick="document.getElementById('odometerFile').click()">
+                        🖼️ Галерия
+                    </button>
+                    <button type="button" id="deleteOdomBtn" class="delete-btn"
+                        title="Изчисти снимката и полетата">🗑️</button>
+                </div>
+                <div class="manual-inputs-grid">
+                    <div style="flex: 1;">
+                        <label for="manualOdoTotal"
+                            style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Общ км:</label>
+                        <input type="text" id="manualOdoTotal" placeholder="напр. 400 или 101400" inputmode="numeric">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="manualOdoTrip"
+                            style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Дневен км:</label>
+                        <input type="number" id="manualOdoTrip" placeholder="" step="0.1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="group-box">
+                <label class="group-title">🧾 Касова бележка:</label>
+                <div class="file-input-container">
+                    <span id="receiptStatus" class="upload-status"></span>
+                    <input type="file" id="receiptCam" accept="image/*" capture="environment" style="display:none;">
+                    <input type="file" id="receiptFile" accept="image/*" style="display:none;">
+                    <button type="button" class="select-btn" onclick="document.getElementById('receiptCam').click()">
+                        📷 Камера <span class="pin-icon" id="pin_receCam"
+                            onclick="event.stopPropagation(); pinAutoTrigger('receCam')"
+                            title="Автоматично отваряне при старт">📌</span>
+                    </button>
+                    <button type="button" class="select-btn" onclick="document.getElementById('receiptFile').click()">
+                        🖼️ Галерия
+                    </button>
+                    <button type="button" id="deleteReceBtn" class="delete-btn"
+                        title="Изчисти снимката и полетата">🗑️</button>
+                </div>
+                <div class="manual-inputs-grid">
+                    <div style="flex: 1;">
+                        <label for="manualTotalAmount"
+                            style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Обща сума (€):</label>
+                        <input type="number" id="manualTotalAmount" placeholder="" step="0.01">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="manualDiscount"
+                            style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Отстъпка (€):</label>
+                        <input type="number" id="manualDiscount" placeholder="" step="0.01">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="manualLiters"
+                            style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Литри:</label>
+                        <input type="number" id="manualLiters" placeholder="" step="0.01">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn">🚀 Изпрати и анализирай</button>
+            <button type="button" id="viewHistoryBtn">📜 История</button>
+        </form>
+
+        <div id="statusBox" class="status"></div>
+
+        <!-- Модален прозорец за преглед на снимка -->
+        <div id="previewModal" class="modal-overlay">
+            <span class="modal-close" id="closeModalBtn">&times;</span>
+            <div id="crop-container">
+                <img id="previewImage" class="modal-content">
+                <div id="crop-box">
+                    <div class="handle tl" data-handle="tl"></div>
+                    <div class="handle tr" data-handle="tr"></div>
+                    <div class="handle bl" data-handle="bl"></div>
+                    <div class="handle br" data-handle="br"></div>
+                </div>
+            </div>
+            <button id="cropBtn">✂️ Изрежи и запази</button>
+        </div>
+
+        <div id="actionButtonsContainer" class="action-buttons-container">
+            <button type="button" id="closeBtn">Затвори</button>
+            <button type="button" id="reloadBtn">➕ Ново зареждане</button>
+        </div>
     </div>
-    <h1 id="mainTitle">⛽ Нов запис за гориво</h1>
-    
-    <form id="fuelForm">
-        <input type="hidden" id="password" value="123">
 
-        <div class="form-group">
-            <label for="vehicle">🚗 Автомобил:</label>
-            <div class="vehicle-select-container">
-                <select id="vehicle">
-                </select>
-                <button type="button" id="pinVehicleBtn" title="Запази като избор по подразбиране">📌</button>
-            </div>
-        </div>
+    <script>
+        let history = [];
+        let currentHistoryIndex = 0;
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme');
 
-        <div class="group-box">
-            <label class="group-title">📸 Километраж:</label>
-            <div class="file-input-container">
-                <span id="odomStatus" class="upload-status"></span>
-                <input type="file" id="odometerCam" accept="image/*" capture="environment" style="display:none;">
-                <input type="file" id="odometerFile" accept="image/*" style="display:none;">
-                <button type="button" class="select-btn" onclick="document.getElementById('odometerCam').click()">
-                    📷 Камера <span class="pin-icon" id="pin_odomCam" onclick="event.stopPropagation(); pinAutoTrigger('odomCam')" title="Автоматично отваряне при старт">📌</span>
-                </button>
-                <button type="button" class="select-btn" onclick="document.getElementById('odometerFile').click()">
-                    🖼️ Галерия
-                </button>
-                <button type="button" id="deleteOdomBtn" class="delete-btn" title="Изчисти снимката и полетата">🗑️</button>
-            </div>
-            <div class="manual-inputs-grid">
-                <div style="flex: 1;">
-                    <label for="manualOdoTotal" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Общ км (ръчно):</label>
-                    <input type="text" id="manualOdoTotal" placeholder="напр. 400 или 101400" inputmode="numeric">
-                </div>
-                <div style="flex: 1;">
-                    <label for="manualOdoTrip" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Дневен км (ръчно):</label>
-                    <input type="number" id="manualOdoTrip" placeholder="напр. 450.5" step="0.1">
-                </div>
-            </div>
-        </div>
-
-        <div class="group-box">
-            <label class="group-title">🧾 Касова бележка:</label>
-            <div class="file-input-container">
-                <span id="receiptStatus" class="upload-status"></span>
-                <input type="file" id="receiptCam" accept="image/*" capture="environment" style="display:none;">
-                <input type="file" id="receiptFile" accept="image/*" style="display:none;">
-                <button type="button" class="select-btn" onclick="document.getElementById('receiptCam').click()">
-                    📷 Камера <span class="pin-icon" id="pin_receCam" onclick="event.stopPropagation(); pinAutoTrigger('receCam')" title="Автоматично отваряне при старт">📌</span>
-                </button>
-                <button type="button" class="select-btn" onclick="document.getElementById('receiptFile').click()">
-                    🖼️ Галерия
-                </button>
-                <button type="button" id="deleteReceBtn" class="delete-btn" title="Изчисти снимката и полетата">🗑️</button>
-            </div>
-            <div class="manual-inputs-grid">
-                <div style="flex: 1;">
-                    <label for="manualTotalAmount" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Обща сума (€):</label>
-                    <input type="number" id="manualTotalAmount" placeholder="37.50" step="0.01">
-                </div>
-                <div style="flex: 1;">
-                    <label for="manualDiscount" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Отстъпка (€):</label>
-                    <input type="number" id="manualDiscount" placeholder="1.50" step="0.01">
-                </div>
-                <div style="flex: 1;">
-                    <label for="manualLiters" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Литри:</label>
-                    <input type="number" id="manualLiters" placeholder="60.00" step="0.01">
-                </div>
-            </div>
-        </div>
-
-        <button type="submit" id="submitBtn">🚀 Изпрати и анализирай</button>
-        <button type="button" id="viewHistoryBtn">📜 История</button>
-    </form>
-
-    <div id="statusBox" class="status"></div>
-
-    <!-- Модален прозорец за преглед на снимка -->
-    <div id="previewModal" class="modal-overlay">
-        <span class="modal-close" id="closeModalBtn">&times;</span>
-        <div id="crop-container">
-            <img id="previewImage" class="modal-content">
-            <div id="crop-box">
-                <div class="handle tl" data-handle="tl"></div>
-                <div class="handle tr" data-handle="tr"></div>
-                <div class="handle bl" data-handle="bl"></div>
-                <div class="handle br" data-handle="br"></div>
-            </div>
-        </div>
-        <button id="cropBtn">✂️ Изрежи и запази</button>
-    </div>
-
-    <div id="actionButtonsContainer" class="action-buttons-container">
-        <button type="button" id="closeBtn">Затвори</button>
-        <button type="button" id="reloadBtn">➕ Ново зареждане</button>
-    </div>
-</div>
-
-<script>
-    let history = [];
-    let currentHistoryIndex = 0;
-    const themeToggle = document.getElementById('themeToggle');
-    const currentTheme = localStorage.getItem('theme');
-
-    function applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        if (theme === 'dark') {
-            themeToggle.checked = true;
-        } else {
-            themeToggle.checked = false;
-        }
-    }
-
-    if (currentTheme) {
-        applyTheme(currentTheme);
-    } else {
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        applyTheme(prefersDark ? 'dark' : 'light');
-    }
-
-    themeToggle.addEventListener('change', () => {
-        const newTheme = themeToggle.checked ? 'dark' : 'light';
-        localStorage.setItem('theme', newTheme);
-        applyTheme(newTheme);
-    });
-
-    const vehicleSelect = document.getElementById('vehicle');
-    const pinVehicleBtn = document.getElementById('pinVehicleBtn');
-
-    pinVehicleBtn.addEventListener('click', () => {
-        const selectedVehicleId = vehicleSelect.value;
-        localStorage.setItem('defaultVehicleId', selectedVehicleId);
-        pinVehicleBtn.style.backgroundColor = '#28a745';
-        setTimeout(() => {
-            pinVehicleBtn.style.backgroundColor = 'var(--border-color)';
-        }, 1500);
-    });
-
-    function updatePinUI() {
-        const activeAction = localStorage.getItem('pinnedAutoTrigger');
-        ['odomCam', 'receCam'].forEach(id => {
-            const el = document.getElementById('pin_' + id);
-            if (el) {
-                if (id === activeAction) {
-                    el.classList.add('active');
-                } else {
-                    el.classList.remove('active');
-                }
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                themeToggle.checked = true;
+            } else {
+                themeToggle.checked = false;
             }
+        }
+
+        if (currentTheme) {
+            applyTheme(currentTheme);
+        } else {
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark ? 'dark' : 'light');
+        }
+
+        themeToggle.addEventListener('change', () => {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
         });
-    }
 
-    function pinAutoTrigger(actionId) {
-        const current = localStorage.getItem('pinnedAutoTrigger');
-        if (current === actionId) {
-            localStorage.removeItem('pinnedAutoTrigger');
-        } else {
-            localStorage.setItem('pinnedAutoTrigger', actionId);
-        }
-        updatePinUI();
-    }
+        const vehicleSelect = document.getElementById('vehicle');
+        const pinVehicleBtn = document.getElementById('pinVehicleBtn');
 
-    function triggerPinnedAction(actionId) {
-        if (actionId === 'odomCam') document.getElementById('odometerCam').click();
-        else if (actionId === 'receCam') document.getElementById('receiptCam').click();
-    }
+        pinVehicleBtn.addEventListener('click', () => {
+            const selectedVehicleId = vehicleSelect.value;
+            localStorage.setItem('defaultVehicleId', selectedVehicleId);
+            pinVehicleBtn.style.backgroundColor = '#28a745';
+            setTimeout(() => {
+                pinVehicleBtn.style.backgroundColor = 'var(--border-color)';
+            }, 1500);
+        });
 
-    const statusBox = document.getElementById('statusBox');
-
-    function clearErrorOnClick() {
-        if (statusBox.classList.contains('error')) {
-            statusBox.className = 'status';
-        }
-    }
-
-    const closeBtn = document.getElementById('closeBtn');
-    const reloadBtn = document.getElementById('reloadBtn');
-    const viewHistoryBtn = document.getElementById('viewHistoryBtn');
-
-    function showForm() {
-        document.getElementById('mainTitle').innerText = '⛽ Нов запис за гориво';
-        document.getElementById('fuelForm').style.display = 'block';
-        document.getElementById('statusBox').className = 'status';
-        document.getElementById('actionButtonsContainer').style.display = 'none';
-        updateViewHistoryBtn();
-    }
-
-    function updateViewHistoryBtn() {
-        if (!viewHistoryBtn) return;
-        if (history.length > 0) {
-            viewHistoryBtn.style.display = 'block';
-            viewHistoryBtn.innerText = `📜 История (${history.length})`;
-        } else {
-            viewHistoryBtn.style.display = 'none';
-        }
-    }
-
-    function getSelectedFile(isOdometer) {
-        const camInput = document.getElementById(isOdometer ? 'odometerCam' : 'receiptCam');
-        const fileInput = document.getElementById(isOdometer ? 'odometerFile' : 'receiptFile');
-        if (camInput.files && camInput.files.length > 0) return camInput.files[0];
-        if (fileInput.files && fileInput.files.length > 0) return fileInput.files[0];
-        return null;
-    }
-
-    function clearOdomPhotoOnly() {
-        localStorage.removeItem('cachedOdomImage');
-        const statusEl = document.getElementById('odomStatus');
-        statusEl.innerHTML = '';
-        statusEl.style.display = 'none';
-        statusEl.style.width = '0';
-        document.getElementById('odometerCam').value = '';
-        document.getElementById('odometerFile').value = '';
-    }
-
-    function clearOdomAll() {
-        clearOdomPhotoOnly();
-        document.getElementById('manualOdoTotal').value = '';
-        document.getElementById('manualOdoTrip').value = '';
-    }
-
-    function handleOdoManualInput() {
-        const tot = document.getElementById('manualOdoTotal').value.trim();
-        const trp = document.getElementById('manualOdoTrip').value.trim();
-        if (tot !== '' || trp !== '') {
-            clearOdomPhotoOnly();
-        }
-    }
-    document.getElementById('manualOdoTotal').addEventListener('input', handleOdoManualInput);
-    document.getElementById('manualOdoTrip').addEventListener('input', handleOdoManualInput);
-
-    function clearRecePhotoOnly() {
-        localStorage.removeItem('cachedReceImage');
-        const statusEl = document.getElementById('receiptStatus');
-        statusEl.innerHTML = '';
-        statusEl.style.display = 'none';
-        statusEl.style.width = '0';
-        document.getElementById('receiptCam').value = '';
-        document.getElementById('receiptFile').value = '';
-    }
-
-    function clearReceAll() {
-        clearRecePhotoOnly();
-        document.getElementById('manualTotalAmount').value = '';
-        document.getElementById('manualDiscount').value = '';
-        document.getElementById('manualLiters').value = '';
-    }
-
-    function handleReceManualInput() {
-        const tot = document.getElementById('manualTotalAmount').value.trim();
-        const lit = document.getElementById('manualLiters').value.trim();
-        if (tot !== '' && lit !== '') {
-            clearRecePhotoOnly();
-        }
-    }
-    document.getElementById('manualTotalAmount').addEventListener('input', handleReceManualInput);
-    document.getElementById('manualDiscount').addEventListener('input', handleReceManualInput);
-    document.getElementById('manualLiters').addEventListener('input', handleReceManualInput);
-
-    function parseAndComputeOdometerTotal(inputValue) {
-        const str = inputValue.trim();
-        if (!str) return null;
-        const num = Number(str);
-        if (isNaN(num)) return null;
-        if (str.length <= 3 && num >= 0 && num <= 999) {
-            let prevTotal = null;
-            for (let entry of history) {
-                if (entry.raw_data && entry.raw_data.odometer_total) {
-                    prevTotal = Number(entry.raw_data.odometer_total);
-                    break;
-                }
-            }
-            if (prevTotal !== null && !isNaN(prevTotal)) {
-                let prefix = Math.floor(prevTotal / 1000);
-                let candidate = prefix * 1000 + num;
-                if (candidate < prevTotal) {
-                    prefix += 1;
-                    candidate = prefix * 1000 + num;
-                }
-                return candidate;
-            }
-        }
-        return num;
-    }
-
-    closeBtn.addEventListener('click', () => showForm());
-    reloadBtn.addEventListener('click', () => {
-        localStorage.removeItem('cachedOdomImage');
-        localStorage.removeItem('cachedReceImage');
-        location.reload();
-    });
-
-    viewHistoryBtn.addEventListener('click', () => {
-        if (history.length > 0) {
-            document.getElementById('fuelForm').style.display = 'none';
-            document.getElementById('actionButtonsContainer').style.display = 'flex';
-            displayHistoryEntry(0);
-        }
-    });
-
-    const previewModal = document.getElementById('previewModal');
-    const previewImage = document.getElementById('previewImage');
-    const cropBox = document.getElementById('crop-box');
-    const cropBtn = document.getElementById('cropBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    let currentStorageKey;
-
-    function openPreview(storageKey) {
-        const isOdometer = storageKey === 'cachedOdomImage';
-        const file = getSelectedFile(isOdometer);
-        currentStorageKey = storageKey;
-        let imageSource = null;
-        if (file) {
-            imageSource = file;
-        } else {
-            const cachedImage = localStorage.getItem(storageKey);
-            if (cachedImage) {
-                imageSource = `data:image/jpeg;base64,${JSON.parse(cachedImage).base64Data}`;
-            }
-        }
-        if (!imageSource) {
-            alert('Моля, първо изберете или качете снимка.');
-            return;
-        }
-        previewImage.src = (typeof imageSource === 'string') ? imageSource : URL.createObjectURL(imageSource);
-        previewModal.style.display = 'block';
-        setTimeout(() => {
-            const imgRect = previewImage.getBoundingClientRect();
-            cropBox.style.left = imgRect.left + (imgRect.width * 0.1) + 'px';
-            cropBox.style.top = imgRect.top + (imgRect.height * 0.1) + 'px';
-            cropBox.style.width = imgRect.width * 0.8 + 'px';
-            cropBox.style.height = imgRect.height * 0.8 + 'px';
-        }, 50);
-    }
-
-    function closePreview() {
-        previewModal.style.display = 'none';
-    }
-
-    document.getElementById('odomStatus').addEventListener('click', () => openPreview('cachedOdomImage'));
-    document.getElementById('receiptStatus').addEventListener('click', () => openPreview('cachedReceImage'));
-    closeModalBtn.addEventListener('click', closePreview);
-    previewModal.addEventListener('click', (e) => { if (e.target === previewModal) closePreview(); });
-
-    let isDragging = false, activeHandle = null;
-    let startX, startY, startLeft, startTop, startWidth, startHeight;
-
-    function getClientPos(e) {
-        if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        return { x: e.clientX, y: e.clientY };
-    }
-
-    function startInteraction(e) {
-        const pos = getClientPos(e);
-        startX = pos.x;
-        startY = pos.y;
-        startLeft = cropBox.offsetLeft;
-        startTop = cropBox.offsetTop;
-        startWidth = cropBox.offsetWidth;
-        startHeight = cropBox.offsetHeight;
-        if (e.target.classList.contains('handle')) {
-            activeHandle = e.target.getAttribute('data-handle');
-        } else {
-            isDragging = true;
-        }
-    }
-
-    function moveInteraction(e) {
-        if (!isDragging && !activeHandle) return;
-        const pos = getClientPos(e);
-        const dx = pos.x - startX;
-        const dy = pos.y - startY;
-        if (isDragging) {
-            cropBox.style.left = (startLeft + dx) + 'px';
-            cropBox.style.top = (startTop + dy) + 'px';
-        } else if (activeHandle) {
-            if (activeHandle === 'br') {
-                cropBox.style.width = Math.max(30, startWidth + dx) + 'px';
-                cropBox.style.height = Math.max(30, startHeight + dy) + 'px';
-            } else if (activeHandle === 'bl') {
-                const nw = Math.max(30, startWidth - dx);
-                cropBox.style.width = nw + 'px';
-                cropBox.style.left = (startLeft + (startWidth - nw)) + 'px';
-                cropBox.style.height = Math.max(30, startHeight + dy) + 'px';
-            } else if (activeHandle === 'tr') {
-                const nh = Math.max(30, startHeight - dy);
-                cropBox.style.width = Math.max(30, startWidth + dx) + 'px';
-                cropBox.style.height = nh + 'px';
-                cropBox.style.top = (startTop + (startHeight - nh)) + 'px';
-            } else if (activeHandle === 'tl') {
-                const nw = Math.max(30, startWidth - dx);
-                const nh = Math.max(30, startHeight - dy);
-                cropBox.style.width = nw + 'px';
-                cropBox.style.left = (startLeft + (startWidth - nw)) + 'px';
-                cropBox.style.height = nh + 'px';
-                cropBox.style.top = (startTop + (startHeight - nh)) + 'px';
-            }
-        }
-    }
-
-    function endInteraction() {
-        isDragging = false;
-        activeHandle = null;
-    }
-
-    cropBox.addEventListener('mousedown', startInteraction);
-    cropBox.addEventListener('touchstart', (e) => { startInteraction(e); }, { passive: false });
-
-    window.addEventListener('mousemove', moveInteraction);
-    window.addEventListener('touchmove', (e) => {
-        if (isDragging || activeHandle) {
-            if (e.cancelable) e.preventDefault();
-            moveInteraction(e);
-        }
-    }, { passive: false });
-
-    window.addEventListener('mouseup', endInteraction);
-    window.addEventListener('touchend', endInteraction);
-
-    cropBtn.addEventListener('click', () => {
-        const imgRect = previewImage.getBoundingClientRect();
-        const cropRect = cropBox.getBoundingClientRect();
-        const scaleX = previewImage.naturalWidth / imgRect.width;
-        const scaleY = previewImage.naturalHeight / imgRect.height;
-        const cropX = (cropRect.left - imgRect.left) * scaleX;
-        const cropY = (cropRect.top - imgRect.top) * scaleY;
-        const cropWidth = cropRect.width * scaleX;
-        const cropHeight = cropRect.height * scaleY;
-        const canvas = document.createElement('canvas');
-        canvas.width = cropWidth;
-        canvas.height = cropHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(previewImage, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
-        const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
-        if (currentStorageKey) {
-            const newImageData = {
-                mimeType: 'image/jpeg',
-                base64Data: croppedDataUrl.split(',')[1]
-            };
-            localStorage.setItem(currentStorageKey, JSON.stringify(newImageData));
-            document.querySelector(`#${currentStorageKey === 'cachedOdomImage' ? 'odom' : 'receipt'}Status img`).src = croppedDataUrl;
-        }
-        closePreview();
-    });
-
-    const deleteOdomBtn = document.getElementById('deleteOdomBtn');
-    const deleteReceBtn = document.getElementById('deleteReceBtn');
-
-    deleteOdomBtn.addEventListener('click', () => clearOdomAll());
-    deleteReceBtn.addEventListener('click', () => clearReceAll());
-
-    async function handleFileChange(event) {
-        const input = event.target;
-        const isOdometer = input.id.startsWith('odometer');
-        const statusEl = document.getElementById(isOdometer ? 'odomStatus' : 'receiptStatus');
-        const storageKey = isOdometer ? 'cachedOdomImage' : 'cachedReceImage';
-        if (input.files.length === 0) return;
-        statusEl.innerHTML = '⏳...';
-        statusEl.style.display = 'flex';
-        statusEl.style.width = 'auto';
-        try {
-            const compressedImage = await compressImage(input.files[0]);
-            localStorage.setItem(storageKey, JSON.stringify(compressedImage));
-            statusEl.style.width = '44px';
-            statusEl.innerHTML = `<img src="data:image/jpeg;base64,${compressedImage.base64Data}" alt="uploaded">`;
-        } catch (err) {
-            statusEl.style.width = 'auto';
-            statusEl.innerHTML = '❌ Грешка';
-            console.error('Грешка при компресиране:', err);
-        }
-    }
-
-    document.getElementById('odometerCam').addEventListener('change', handleFileChange);
-    document.getElementById('odometerFile').addEventListener('change', handleFileChange);
-    document.getElementById('receiptCam').addEventListener('change', handleFileChange);
-    document.getElementById('receiptFile').addEventListener('change', handleFileChange);
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const cachedOdom = localStorage.getItem('cachedOdomImage');
-        const cachedRece = localStorage.getItem('cachedReceImage');
-        history = JSON.parse(localStorage.getItem('fuelHistory')) || [];
-        if (cachedOdom) {
-            const odomEl = document.getElementById('odomStatus');
-            odomEl.style.display = 'flex';
-            odomEl.style.width = '44px';
-            odomEl.innerHTML = `<img src="data:image/jpeg;base64,${JSON.parse(cachedOdom).base64Data}" alt="cached">`;
-        }
-        if (cachedRece) {
-            const receEl = document.getElementById('receiptStatus');
-            receEl.style.display = 'flex';
-            receEl.style.width = '44px';
-            receEl.innerHTML = `<img src="data:image/jpeg;base64,${JSON.parse(cachedRece).base64Data}" alt="cached">`;
-        }
-        const defaultVehicleId = localStorage.getItem('defaultVehicleId');
-        if (defaultVehicleId && vehicleSelect.querySelector(`option[value="${defaultVehicleId}"]`)) {
-            vehicleSelect.value = defaultVehicleId;
-        }
-        updateViewHistoryBtn();
-        updatePinUI();
-        const autoAction = localStorage.getItem('pinnedAutoTrigger');
-        if (autoAction) {
-            setTimeout(() => { triggerPinnedAction(autoAction); }, 300);
-        }
-    });
-
-    function compressImage(file, maxDimension = 1920, quality = 0.8) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (e) => {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = () => {
-                    let width = img.width;
-                    let height = img.height;
-                    if (width > height) {
-                        if (width > maxDimension) {
-                            height = Math.round((height * maxDimension) / width);
-                            width = maxDimension;
-                        }
+        function updatePinUI() {
+            const activeAction = localStorage.getItem('pinnedAutoTrigger');
+            ['odomCam', 'receCam'].forEach(id => {
+                const el = document.getElementById('pin_' + id);
+                if (el) {
+                    if (id === activeAction) {
+                        el.classList.add('active');
                     } else {
-                        if (height > maxDimension) {
-                            width = Math.round((width * maxDimension) / height);
-                            height = maxDimension;
-                        }
-                    }
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                    resolve({
-                        mimeType: 'image/jpeg',
-                        base64Data: dataUrl.split(',')[1]
-                    });
-                };
-                img.onerror = reject;
-            };
-            reader.onerror = reject;
-        });
-    }
-
-    document.getElementById('fuelForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = true;
-        try {
-            const manualTotAmt = document.getElementById('manualTotalAmount').value.trim();
-            const manualLit = document.getElementById('manualLiters').value.trim();
-            const manualOdoTotStr = document.getElementById('manualOdoTotal').value.trim();
-            const manualOdoTripStr = document.getElementById('manualOdoTrip').value.trim();
-            const isFullManual = (manualTotAmt !== '' && manualLit !== '') && (manualOdoTotStr !== '' || manualOdoTripStr !== '');
-            if (isFullManual) {
-                const computedOdoTotal = parseAndComputeOdometerTotal(manualOdoTotStr);
-                const pricePerLit = (Number(manualTotAmt) / Number(manualLit)).toFixed(2);
-                const manualDisc = document.getElementById('manualDiscount').value.trim();
-                const manualData = {
-                    odometer_total: computedOdoTotal,
-                    odometer_trip: manualOdoTripStr !== '' ? Number(manualOdoTripStr) : null,
-                    liters: Number(manualLit),
-                    price_per_liter: Number(pricePerLit),
-                    discount: manualDisc !== '' ? Number(manualDisc) : 0,
-                    total_amount: Number(manualTotAmt),
-                    receipt_date: new Date().toISOString().slice(0, 16).replace('T', ' ')
-                };
-                let distance = 0;
-                if (manualData.odometer_trip && manualData.odometer_trip > 0) {
-                    distance = manualData.odometer_trip;
-                } else if (manualData.odometer_total) {
-                    let prevTot = null;
-                    for (let entry of history) {
-                        if (entry.raw_data && entry.raw_data.odometer_total) {
-                            prevTot = Number(entry.raw_data.odometer_total);
-                            break;
-                        }
-                    }
-                    if (prevTot !== null && manualData.odometer_total > prevTot) {
-                        distance = manualData.odometer_total - prevTot;
+                        el.classList.remove('active');
                     }
                 }
-                const l_100 = distance > 0 ? (manualData.liters / distance) * 100 : 0;
-                const eur_100 = distance > 0 ? (manualData.total_amount / distance) * 100 : 0;
-                const eur_km = distance > 0 ? (manualData.total_amount / distance) : 0;
-                const newEntry = {
-                    raw_data: manualData,
-                    calculated_data: {
-                        liters_per_100km: l_100.toFixed(2),
-                        euro_per_100km: eur_100.toFixed(2),
-                        euro_per_km: eur_km.toFixed(4)
+            });
+        }
+
+        function pinAutoTrigger(actionId) {
+            const current = localStorage.getItem('pinnedAutoTrigger');
+            if (current === actionId) {
+                localStorage.removeItem('pinnedAutoTrigger');
+            } else {
+                localStorage.setItem('pinnedAutoTrigger', actionId);
+            }
+            updatePinUI();
+        }
+
+        function triggerPinnedAction(actionId) {
+            if (actionId === 'odomCam') document.getElementById('odometerCam').click();
+            else if (actionId === 'receCam') document.getElementById('receiptCam').click();
+        }
+
+        const statusBox = document.getElementById('statusBox');
+
+        function clearErrorOnClick() {
+            if (statusBox.classList.contains('error')) {
+                statusBox.className = 'status';
+            }
+        }
+
+        const closeBtn = document.getElementById('closeBtn');
+        const reloadBtn = document.getElementById('reloadBtn');
+        const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+
+        function showForm() {
+            document.getElementById('mainTitle').innerText = '⛽ Нов запис за гориво';
+            document.getElementById('fuelForm').style.display = 'block';
+            document.getElementById('statusBox').className = 'status';
+            document.getElementById('actionButtonsContainer').style.display = 'none';
+            updateViewHistoryBtn();
+        }
+
+        function updateViewHistoryBtn() {
+            if (!viewHistoryBtn) return;
+            if (history.length > 0) {
+                viewHistoryBtn.style.display = 'block';
+                viewHistoryBtn.innerText = `📜 История (${history.length})`;
+            } else {
+                viewHistoryBtn.style.display = 'none';
+            }
+        }
+
+        function getSelectedFile(isOdometer) {
+            const camInput = document.getElementById(isOdometer ? 'odometerCam' : 'receiptCam');
+            const fileInput = document.getElementById(isOdometer ? 'odometerFile' : 'receiptFile');
+            if (camInput.files && camInput.files.length > 0) return camInput.files[0];
+            if (fileInput.files && fileInput.files.length > 0) return fileInput.files[0];
+            return null;
+        }
+
+        function clearOdomPhotoOnly() {
+            localStorage.removeItem('cachedOdomImage');
+            const statusEl = document.getElementById('odomStatus');
+            statusEl.innerHTML = '';
+            statusEl.style.display = 'none';
+            statusEl.style.width = '0';
+            document.getElementById('odometerCam').value = '';
+            document.getElementById('odometerFile').value = '';
+        }
+
+        function clearOdomAll() {
+            clearOdomPhotoOnly();
+            document.getElementById('manualOdoTotal').value = '';
+            document.getElementById('manualOdoTrip').value = '';
+        }
+
+        function handleOdoManualInput() {
+            const tot = document.getElementById('manualOdoTotal').value.trim();
+            const trp = document.getElementById('manualOdoTrip').value.trim();
+            if (tot !== '' || trp !== '') {
+                clearOdomPhotoOnly();
+            }
+        }
+        document.getElementById('manualOdoTotal').addEventListener('input', handleOdoManualInput);
+        document.getElementById('manualOdoTrip').addEventListener('input', handleOdoManualInput);
+
+        function clearRecePhotoOnly() {
+            localStorage.removeItem('cachedReceImage');
+            const statusEl = document.getElementById('receiptStatus');
+            statusEl.innerHTML = '';
+            statusEl.style.display = 'none';
+            statusEl.style.width = '0';
+            document.getElementById('receiptCam').value = '';
+            document.getElementById('receiptFile').value = '';
+        }
+
+        function clearReceAll() {
+            clearRecePhotoOnly();
+            document.getElementById('manualTotalAmount').value = '';
+            document.getElementById('manualDiscount').value = '';
+            document.getElementById('manualLiters').value = '';
+        }
+
+        function handleReceManualInput() {
+            const tot = document.getElementById('manualTotalAmount').value.trim();
+            const lit = document.getElementById('manualLiters').value.trim();
+            if (tot !== '' && lit !== '') {
+                clearRecePhotoOnly();
+            }
+        }
+        document.getElementById('manualTotalAmount').addEventListener('input', handleReceManualInput);
+        document.getElementById('manualDiscount').addEventListener('input', handleReceManualInput);
+        document.getElementById('manualLiters').addEventListener('input', handleReceManualInput);
+
+        function parseAndComputeOdometerTotal(inputValue) {
+            const str = inputValue.trim();
+            if (!str) return null;
+            const num = Number(str);
+            if (isNaN(num)) return null;
+            if (str.length <= 3 && num >= 0 && num <= 999) {
+                let prevTotal = null;
+                for (let entry of history) {
+                    if (entry.raw_data && entry.raw_data.odometer_total) {
+                        prevTotal = Number(entry.raw_data.odometer_total);
+                        break;
                     }
+                }
+                if (prevTotal !== null && !isNaN(prevTotal)) {
+                    let prefix = Math.floor(prevTotal / 1000);
+                    let candidate = prefix * 1000 + num;
+                    if (candidate < prevTotal) {
+                        prefix += 1;
+                        candidate = prefix * 1000 + num;
+                    }
+                    return candidate;
+                }
+            }
+            return num;
+        }
+
+        closeBtn.addEventListener('click', () => showForm());
+        reloadBtn.addEventListener('click', () => {
+            localStorage.removeItem('cachedOdomImage');
+            localStorage.removeItem('cachedReceImage');
+            location.reload();
+        });
+
+        viewHistoryBtn.addEventListener('click', () => {
+            if (history.length > 0) {
+                document.getElementById('fuelForm').style.display = 'none';
+                document.getElementById('actionButtonsContainer').style.display = 'flex';
+                displayHistoryEntry(0);
+            }
+        });
+
+        const previewModal = document.getElementById('previewModal');
+        const previewImage = document.getElementById('previewImage');
+        const cropBox = document.getElementById('crop-box');
+        const cropBtn = document.getElementById('cropBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        let currentStorageKey;
+
+        function openPreview(storageKey) {
+            const isOdometer = storageKey === 'cachedOdomImage';
+            const file = getSelectedFile(isOdometer);
+            currentStorageKey = storageKey;
+            let imageSource = null;
+            if (file) {
+                imageSource = file;
+            } else {
+                const cachedImage = localStorage.getItem(storageKey);
+                if (cachedImage) {
+                    imageSource = `data:image/jpeg;base64,${JSON.parse(cachedImage).base64Data}`;
+                }
+            }
+            if (!imageSource) {
+                alert('Моля, първо изберете или качете снимка.');
+                return;
+            }
+            previewImage.src = (typeof imageSource === 'string') ? imageSource : URL.createObjectURL(imageSource);
+            previewModal.style.display = 'block';
+            setTimeout(() => {
+                const imgRect = previewImage.getBoundingClientRect();
+                const initW = Math.max(100, imgRect.width * 0.8);
+                const initH = Math.max(100, imgRect.height * 0.8);
+                cropBox.style.left = Math.max(imgRect.left, imgRect.left + (imgRect.width - initW) / 2) + 'px';
+                cropBox.style.top = Math.max(imgRect.top, imgRect.top + (imgRect.height - initH) / 2) + 'px';
+                cropBox.style.width = initW + 'px';
+                cropBox.style.height = initH + 'px';
+            }, 50);
+        }
+
+        function closePreview() {
+            previewModal.style.display = 'none';
+        }
+
+        document.getElementById('odomStatus').addEventListener('click', () => openPreview('cachedOdomImage'));
+        document.getElementById('receiptStatus').addEventListener('click', () => openPreview('cachedReceImage'));
+        closeModalBtn.addEventListener('click', closePreview);
+        previewModal.addEventListener('click', (e) => { if (e.target === previewModal) closePreview(); });
+
+        let isDragging = false, activeHandle = null;
+        let startX, startY, startLeft, startTop, startWidth, startHeight;
+
+        function getClientPos(e) {
+            if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            return { x: e.clientX, y: e.clientY };
+        }
+
+        function startInteraction(e) {
+            const pos = getClientPos(e);
+            startX = pos.x;
+            startY = pos.y;
+            startLeft = cropBox.offsetLeft;
+            startTop = cropBox.offsetTop;
+            startWidth = cropBox.offsetWidth;
+            startHeight = cropBox.offsetHeight;
+            if (e.target.classList.contains('handle')) {
+                activeHandle = e.target.getAttribute('data-handle');
+            } else {
+                isDragging = true;
+            }
+        }
+
+        function moveInteraction(e) {
+            if (!isDragging && !activeHandle) return;
+            const pos = getClientPos(e);
+            const dx = pos.x - startX;
+            const dy = pos.y - startY;
+            if (isDragging) {
+                cropBox.style.left = (startLeft + dx) + 'px';
+                cropBox.style.top = (startTop + dy) + 'px';
+            } else if (activeHandle) {
+                if (activeHandle === 'br') {
+                    cropBox.style.width = Math.max(100, startWidth + dx) + 'px';
+                    cropBox.style.height = Math.max(100, startHeight + dy) + 'px';
+                } else if (activeHandle === 'bl') {
+                    const nw = Math.max(100, startWidth - dx);
+                    cropBox.style.width = nw + 'px';
+                    cropBox.style.left = (startLeft + (startWidth - nw)) + 'px';
+                    cropBox.style.height = Math.max(100, startHeight + dy) + 'px';
+                } else if (activeHandle === 'tr') {
+                    const nh = Math.max(100, startHeight - dy);
+                    cropBox.style.width = Math.max(100, startWidth + dx) + 'px';
+                    cropBox.style.height = nh + 'px';
+                    cropBox.style.top = (startTop + (startHeight - nh)) + 'px';
+                } else if (activeHandle === 'tl') {
+                    const nw = Math.max(100, startWidth - dx);
+                    const nh = Math.max(100, startHeight - dy);
+                    cropBox.style.width = nw + 'px';
+                    cropBox.style.left = (startLeft + (startWidth - nw)) + 'px';
+                    cropBox.style.height = nh + 'px';
+                    cropBox.style.top = (startTop + (startHeight - nh)) + 'px';
+                }
+            }
+        }
+
+        function endInteraction() {
+            isDragging = false;
+            activeHandle = null;
+        }
+
+        cropBox.addEventListener('mousedown', startInteraction);
+        cropBox.addEventListener('touchstart', (e) => { startInteraction(e); }, { passive: false });
+
+        window.addEventListener('mousemove', moveInteraction);
+        window.addEventListener('touchmove', (e) => {
+            if (isDragging || activeHandle) {
+                if (e.cancelable) e.preventDefault();
+                moveInteraction(e);
+            }
+        }, { passive: false });
+
+        window.addEventListener('mouseup', endInteraction);
+        window.addEventListener('touchend', endInteraction);
+
+        cropBtn.addEventListener('click', () => {
+            const imgRect = previewImage.getBoundingClientRect();
+            const cropRect = cropBox.getBoundingClientRect();
+            const scaleX = previewImage.naturalWidth / imgRect.width;
+            const scaleY = previewImage.naturalHeight / imgRect.height;
+            const cropX = (cropRect.left - imgRect.left) * scaleX;
+            const cropY = (cropRect.top - imgRect.top) * scaleY;
+            const cropWidth = cropRect.width * scaleX;
+            const cropHeight = cropRect.height * scaleY;
+            const canvas = document.createElement('canvas');
+            canvas.width = cropWidth;
+            canvas.height = cropHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(previewImage, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+            const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            if (currentStorageKey) {
+                const newImageData = {
+                    mimeType: 'image/jpeg',
+                    base64Data: croppedDataUrl.split(',')[1]
+                };
+                localStorage.setItem(currentStorageKey, JSON.stringify(newImageData));
+                document.querySelector(`#${currentStorageKey === 'cachedOdomImage' ? 'odom' : 'receipt'}Status img`).src = croppedDataUrl;
+            }
+            closePreview();
+        });
+
+        const deleteOdomBtn = document.getElementById('deleteOdomBtn');
+        const deleteReceBtn = document.getElementById('deleteReceBtn');
+
+        deleteOdomBtn.addEventListener('click', () => clearOdomAll());
+        deleteReceBtn.addEventListener('click', () => clearReceAll());
+
+        async function handleFileChange(event) {
+            const input = event.target;
+            const isOdometer = input.id.startsWith('odometer');
+            const statusEl = document.getElementById(isOdometer ? 'odomStatus' : 'receiptStatus');
+            const storageKey = isOdometer ? 'cachedOdomImage' : 'cachedReceImage';
+            if (input.files.length === 0) return;
+            statusEl.innerHTML = '⏳...';
+            statusEl.style.display = 'flex';
+            statusEl.style.width = 'auto';
+            try {
+                const compressedImage = await compressImage(input.files[0]);
+                localStorage.setItem(storageKey, JSON.stringify(compressedImage));
+                statusEl.style.width = '44px';
+                statusEl.innerHTML = `<img src="data:image/jpeg;base64,${compressedImage.base64Data}" alt="uploaded">`;
+            } catch (err) {
+                statusEl.style.width = 'auto';
+                statusEl.innerHTML = '❌ Грешка';
+                console.error('Грешка при компресиране:', err);
+            }
+        }
+
+        document.getElementById('odometerCam').addEventListener('change', handleFileChange);
+        document.getElementById('odometerFile').addEventListener('change', handleFileChange);
+        document.getElementById('receiptCam').addEventListener('change', handleFileChange);
+        document.getElementById('receiptFile').addEventListener('change', handleFileChange);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const cachedOdom = localStorage.getItem('cachedOdomImage');
+            const cachedRece = localStorage.getItem('cachedReceImage');
+            history = JSON.parse(localStorage.getItem('fuelHistory')) || [];
+            if (cachedOdom) {
+                const odomEl = document.getElementById('odomStatus');
+                odomEl.style.display = 'flex';
+                odomEl.style.width = '44px';
+                odomEl.innerHTML = `<img src="data:image/jpeg;base64,${JSON.parse(cachedOdom).base64Data}" alt="cached">`;
+            }
+            if (cachedRece) {
+                const receEl = document.getElementById('receiptStatus');
+                receEl.style.display = 'flex';
+                receEl.style.width = '44px';
+                receEl.innerHTML = `<img src="data:image/jpeg;base64,${JSON.parse(cachedRece).base64Data}" alt="cached">`;
+            }
+            const defaultVehicleId = localStorage.getItem('defaultVehicleId');
+            if (defaultVehicleId && vehicleSelect.querySelector(`option[value="${defaultVehicleId}"]`)) {
+                vehicleSelect.value = defaultVehicleId;
+            }
+            updateViewHistoryBtn();
+            updatePinUI();
+            const autoAction = localStorage.getItem('pinnedAutoTrigger');
+            if (autoAction) {
+                setTimeout(() => { triggerPinnedAction(autoAction); }, 300);
+            }
+        });
+
+        function compressImage(file, maxDimension = 1920, quality = 0.8) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > height) {
+                            if (width > maxDimension) {
+                                height = Math.round((height * maxDimension) / width);
+                                width = maxDimension;
+                            }
+                        } else {
+                            if (height > maxDimension) {
+                                width = Math.round((width * maxDimension) / height);
+                                height = maxDimension;
+                            }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        resolve({
+                            mimeType: 'image/jpeg',
+                            base64Data: dataUrl.split(',')[1]
+                        });
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+            });
+        }
+
+        document.getElementById('fuelForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            try {
+                const manualTotAmt = document.getElementById('manualTotalAmount').value.trim();
+                const manualLit = document.getElementById('manualLiters').value.trim();
+                const manualOdoTotStr = document.getElementById('manualOdoTotal').value.trim();
+                const manualOdoTripStr = document.getElementById('manualOdoTrip').value.trim();
+                const isFullManual = (manualTotAmt !== '' && manualLit !== '') && (manualOdoTotStr !== '' || manualOdoTripStr !== '');
+                if (isFullManual) {
+                    const computedOdoTotal = parseAndComputeOdometerTotal(manualOdoTotStr);
+                    const pricePerLit = (Number(manualTotAmt) / Number(manualLit)).toFixed(2);
+                    const manualDisc = document.getElementById('manualDiscount').value.trim();
+                    const manualData = {
+                        odometer_total: computedOdoTotal,
+                        odometer_trip: manualOdoTripStr !== '' ? Number(manualOdoTripStr) : null,
+                        liters: Number(manualLit),
+                        price_per_liter: Number(pricePerLit),
+                        discount: manualDisc !== '' ? Number(manualDisc) : 0,
+                        total_amount: Number(manualTotAmt),
+                        receipt_date: new Date().toISOString().slice(0, 16).replace('T', ' ')
+                    };
+                    let distance = 0;
+                    if (manualData.odometer_trip && manualData.odometer_trip > 0) {
+                        distance = manualData.odometer_trip;
+                    } else if (manualData.odometer_total) {
+                        let prevTot = null;
+                        for (let entry of history) {
+                            if (entry.raw_data && entry.raw_data.odometer_total) {
+                                prevTot = Number(entry.raw_data.odometer_total);
+                                break;
+                            }
+                        }
+                        if (prevTot !== null && manualData.odometer_total > prevTot) {
+                            distance = manualData.odometer_total - prevTot;
+                        }
+                    }
+                    const l_100 = distance > 0 ? (manualData.liters / distance) * 100 : 0;
+                    const eur_100 = distance > 0 ? (manualData.total_amount / distance) * 100 : 0;
+                    const eur_km = distance > 0 ? (manualData.total_amount / distance) : 0;
+                    const newEntry = {
+                        raw_data: manualData,
+                        calculated_data: {
+                            liters_per_100km: l_100.toFixed(2),
+                            euro_per_100km: eur_100.toFixed(2),
+                            euro_per_km: eur_km.toFixed(4)
+                        }
+                    };
+                    history.unshift(newEntry);
+                    if (history.length > 10) {
+                        history.pop();
+                    }
+                    localStorage.setItem('fuelHistory', JSON.stringify(history));
+                    currentHistoryIndex = 0;
+                    displayHistoryEntry(currentHistoryIndex);
+                    document.getElementById('fuelForm').style.display = 'none';
+                    document.getElementById('actionButtonsContainer').style.display = 'flex';
+                    updateViewHistoryBtn();
+                    submitBtn.disabled = false;
+                    fetch('/.netlify/functions/process-fuel', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            password: document.getElementById('password').value,
+                            vehicle: document.getElementById('vehicle').value,
+                            isManual: true,
+                            manualData: manualData
+                        })
+                    }).catch(err => console.error('Background sync error:', err));
+                    return;
+                }
+                statusBox.className = 'status info';
+                statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
+                let odomCompressed = null;
+                let receCompressed = null;
+                const odomFile = getSelectedFile(true);
+                const receFile = getSelectedFile(false);
+                const cachedOdom = localStorage.getItem('cachedOdomImage');
+                const cachedRece = localStorage.getItem('cachedReceImage');
+                if (odomFile) {
+                    odomCompressed = await compressImage(odomFile);
+                } else if (cachedOdom) {
+                    odomCompressed = JSON.parse(cachedOdom);
+                }
+                if (receFile) {
+                    receCompressed = await compressImage(receFile);
+                } else if (cachedRece) {
+                    receCompressed = JSON.parse(cachedRece);
+                }
+                if (!odomCompressed || !receCompressed) {
+                    throw new Error('Моля, качете и двете снимки или попълнете ръчните стойности.');
+                }
+                const payload = {
+                    password: document.getElementById('password').value,
+                    vehicle: document.getElementById('vehicle').value,
+                    odometerImage: odomCompressed,
+                    receiptImage: receCompressed
+                };
+                const response = await fetch('/.netlify/functions/process-fuel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const rawText = await response.text();
+                if (!rawText) {
+                    throw new Error(`Сървърът върна празен отговор (Status: ${response.status})`);
+                }
+                let result;
+                try {
+                    result = JSON.parse(rawText);
+                } catch (jsonErr) {
+                    throw new Error(`Отговорът не е валиден JSON!`);
+                }
+                if (!response.ok) {
+                    throw new Error(result.error || `Сървърна грешка (Status ${response.status})`);
+                }
+                const newEntry = {
+                    raw_data: result.raw_data || {},
+                    calculated_data: result.data || {}
                 };
                 history.unshift(newEntry);
                 if (history.length > 10) {
@@ -853,107 +1117,35 @@
                 document.getElementById('fuelForm').style.display = 'none';
                 document.getElementById('actionButtonsContainer').style.display = 'flex';
                 updateViewHistoryBtn();
+            } catch (err) {
+                console.error('❌ [FRONTEND ERROR]:', err);
+                statusBox.className = 'status error';
+                statusBox.innerText = '❌ Грешка: ' + err.message;
+            } finally {
                 submitBtn.disabled = false;
-                fetch('/.netlify/functions/process-fuel', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        password: document.getElementById('password').value,
-                        vehicle: document.getElementById('vehicle').value,
-                        isManual: true,
-                        manualData: manualData
-                    })
-                }).catch(err => console.error('Background sync error:', err));
-                return;
             }
-            statusBox.className = 'status info';
-            statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
-            let odomCompressed = null;
-            let receCompressed = null;
-            const odomFile = getSelectedFile(true);
-            const receFile = getSelectedFile(false);
-            const cachedOdom = localStorage.getItem('cachedOdomImage');
-            const cachedRece = localStorage.getItem('cachedReceImage');
-            if (odomFile) {
-                odomCompressed = await compressImage(odomFile);
-            } else if (cachedOdom) {
-                odomCompressed = JSON.parse(cachedOdom);
-            }
-            if (receFile) {
-                receCompressed = await compressImage(receFile);
-            } else if (cachedRece) {
-                receCompressed = JSON.parse(cachedRece);
-            }
-            if (!odomCompressed || !receCompressed) {
-                throw new Error('Моля, качете и двете снимки или попълнете ръчните стойности.');
-            }
-            const payload = {
-                password: document.getElementById('password').value,
-                vehicle: document.getElementById('vehicle').value,
-                odometerImage: odomCompressed,
-                receiptImage: receCompressed
-            };
-            const response = await fetch('/.netlify/functions/process-fuel', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const rawText = await response.text();
-            if (!rawText) {
-                throw new Error(`Сървърът върна празен отговор (Status: ${response.status})`);
-            }
-            let result;
-            try {
-                result = JSON.parse(rawText);
-            } catch (jsonErr) {
-                throw new Error(`Отговорът не е валиден JSON!`);
-            }
-            if (!response.ok) {
-                throw new Error(result.error || `Сървърна грешка (Status ${response.status})`);
-            }
-            const newEntry = {
-                raw_data: result.raw_data || {},
-                calculated_data: result.data || {}
-            };
-            history.unshift(newEntry);
-            if (history.length > 10) {
-                history.pop();
-            }
-            localStorage.setItem('fuelHistory', JSON.stringify(history));
-            currentHistoryIndex = 0;
-            displayHistoryEntry(currentHistoryIndex);
-            document.getElementById('fuelForm').style.display = 'none';
-            document.getElementById('actionButtonsContainer').style.display = 'flex';
-            updateViewHistoryBtn();
-        } catch (err) {
-            console.error('❌ [FRONTEND ERROR]:', err);
-            statusBox.className = 'status error';
-            statusBox.innerText = '❌ Грешка: ' + err.message;
-        } finally {
-            submitBtn.disabled = false;
-        }
-    });
+        });
 
-    function displayHistoryEntry(index) {
-        if (!history || history.length === 0 || !history[index]) return;
-        currentHistoryIndex = index;
-        document.getElementById('mainTitle').innerText = '📜 История';
-        const entry = history[index];
-        const rawData = entry.raw_data || {};
-        const calculatedData = entry.calculated_data || {};
-        const statusBox = document.getElementById('statusBox');
-        statusBox.className = 'status info';
-        let tripWarningMessage = '';
-        if (rawData.odometer_trip && history[index + 1] && history[index + 1].raw_data && history[index + 1].raw_data.odometer_total && rawData.odometer_total) {
-            const currentTot = Number(rawData.odometer_total);
-            const prevTot = Number(history[index + 1].raw_data.odometer_total);
-            const calcDist = currentTot - prevTot;
-            const tripDist = Number(rawData.odometer_trip);
-            if (calcDist > 0 && Math.abs(tripDist - calcDist) > 10) {
-                tripWarningMessage = `<br><span style="color: #0056b3; font-weight: bold;">ℹ️ Изчисленият пробег (${calcDist.toFixed(1)} км) се различава от дневния километраж (${tripDist.toFixed(1)} км).</span>`;
+        function displayHistoryEntry(index) {
+            if (!history || history.length === 0 || !history[index]) return;
+            currentHistoryIndex = index;
+            document.getElementById('mainTitle').innerText = '📜 История';
+            const entry = history[index];
+            const rawData = entry.raw_data || {};
+            const calculatedData = entry.calculated_data || {};
+            const statusBox = document.getElementById('statusBox');
+            statusBox.className = 'status info';
+            let tripWarningMessage = '';
+            if (rawData.odometer_trip && history[index + 1] && history[index + 1].raw_data && history[index + 1].raw_data.odometer_total && rawData.odometer_total) {
+                const currentTot = Number(rawData.odometer_total);
+                const prevTot = Number(history[index + 1].raw_data.odometer_total);
+                const calcDist = currentTot - prevTot;
+                const tripDist = Number(rawData.odometer_trip);
+                if (calcDist > 0 && Math.abs(tripDist - calcDist) > 10) {
+                    tripWarningMessage = `<br><span style="color: #0056b3; font-weight: bold;">ℹ️ Изчисленият пробег (${calcDist.toFixed(1)} км) се различава от дневния километраж (${tripDist.toFixed(1)} км).</span>`;
+                }
             }
-        }
-        const rawDataHtml = `
+            const rawDataHtml = `
             <div style="text-align: left; margin-bottom: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
                 <b>Разчетени данни:</b><br>
                 Общ километраж: <b>${rawData.odometer_total || 'няма'}</b><br>
@@ -964,40 +1156,41 @@
                 Обща сума: <b>${rawData.total_amount || 'няма'}</b><br>
                 Дата: <b>${rawData.receipt_date || 'няма'}</b><br>
                 <hr style="border: none; border-top: 1px solid var(--border-color); margin: 8px 0;">
-                Реална цена (след отстъпки): <b>${( (Number(rawData.total_amount) || 0) / (Number(rawData.liters) || 1) ).toFixed(2)} €/литър</b>
+                Реална цена (след отстъпки): <b>${((Number(rawData.total_amount) || 0) / (Number(rawData.liters) || 1)).toFixed(2)} €/л</b>
             </div>
         `;
-        const l_100 = Number(calculatedData.liters_per_100km) || 0;
-        const eur_100 = Number(calculatedData.euro_per_100km) || 0;
-        const centsPerKm = ((Number(calculatedData.euro_per_km) || 0) * 100).toFixed(1);
-        let warningMessage = '';
-        if (l_100 > 10) {
-            warningMessage = `<br><span style="color: #c65911; font-weight: bold;">Разходът е по-висок от оптималния!</span>`;
-        }
-        const historyNavHtml = `
+            const l_100 = Number(calculatedData.liters_per_100km) || 0;
+            const eur_100 = Number(calculatedData.euro_per_100km) || 0;
+            const centsPerKm = ((Number(calculatedData.euro_per_km) || 0) * 100).toFixed(1);
+            let warningMessage = '';
+            if (l_100 > 10) {
+                warningMessage = `<br><span style="color: #c65911; font-weight: bold;">Разходът е по-висок от оптималния!</span>`;
+            }
+            const historyNavHtml = `
             <div class="history-nav">
                 <button type="button" id="prevHistoryBtn" ${history.length <= 1 ? 'disabled' : ''}>‹</button>
                 <span id="historyCounter">${index + 1} / ${history.length}</span>
                 <button type="button" id="nextHistoryBtn" ${history.length <= 1 ? 'disabled' : ''}>›</button>
             </div>
         `;
-        statusBox.innerHTML = rawDataHtml + `✅ Успешен запис на данните!<br><br>
-            <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} цента/км</b>`
-            + warningMessage + tripWarningMessage + historyNavHtml;
-        document.getElementById('prevHistoryBtn').addEventListener('click', () => {
-            if (history.length > 1) {
-                currentHistoryIndex = (currentHistoryIndex > 0) ? currentHistoryIndex - 1 : history.length - 1;
-                displayHistoryEntry(currentHistoryIndex);
-            }
-        });
-        document.getElementById('nextHistoryBtn').addEventListener('click', () => {
-            if (history.length > 1) {
-                currentHistoryIndex = (currentHistoryIndex < history.length - 1) ? currentHistoryIndex + 1 : 0;
-                displayHistoryEntry(currentHistoryIndex);
-            }
-        });
-    }
-</script>
+            statusBox.innerHTML = rawDataHtml + `✅ Успешен запис на данните!<br><br>
+            <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} ц/км</b>`
+                + warningMessage + tripWarningMessage + historyNavHtml;
+            document.getElementById('prevHistoryBtn').addEventListener('click', () => {
+                if (history.length > 1) {
+                    currentHistoryIndex = (currentHistoryIndex > 0) ? currentHistoryIndex - 1 : history.length - 1;
+                    displayHistoryEntry(currentHistoryIndex);
+                }
+            });
+            document.getElementById('nextHistoryBtn').addEventListener('click', () => {
+                if (history.length > 1) {
+                    currentHistoryIndex = (currentHistoryIndex < history.length - 1) ? currentHistoryIndex + 1 : 0;
+                    displayHistoryEntry(currentHistoryIndex);
+                }
+            });
+        }
+    </script>
 
 </body>
+
 </html>
