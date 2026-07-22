@@ -140,7 +140,9 @@ exports.handler = async (event, context) => {
                 status: "success",
                 sheet_status: scriptResponseStatus,
                 // Връщаме целия обект с данни, който Apps Script е изчислил
-                data: scriptData.data || {}
+                data: scriptData.data || {},
+                // Добавяме и суровите данни от Gemini за целите на дебъга
+                raw_data: parsedData
             })
         };
 

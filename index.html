@@ -152,6 +152,29 @@
         .file-input-container input[type="file"] {
             flex-grow: 1; /* Полето заема цялата ширина */
         }
+        .action-buttons-container {
+            display: none; /* Скрит по подразбиране */
+            margin-top: 15px;
+            gap: 10px;
+            display: flex;
+        }
+        .action-buttons-container button {
+            flex: 1; /* Бутоните заемат равна ширина */
+        }
+        #closeBtn {
+            background-color: #6c757d; /* Сив цвят за по-малко важната опция */
+        }
+        #reloadBtn { 
+            background-color: #007bff; 
+            /* Премахваме стила от бутона, за да го управлява контейнерът */
+            display: inline-block;
+            margin-top: 0;
+            width: auto;
+        }
+        /* Скриваме стария бутон, който вече не се използва */
+        button#reloadBtn[style*="display: none"] {
+            display: none !important;
+        }
     </style>
     <script src="vehicles.js"></script>
 </head>
@@ -185,7 +208,7 @@
             <label for="odometer">📸 Снимка на километража:</label>
             <div class="file-input-container">
                 <span id="odomStatus" class="upload-status"></span>
-                <input type="file" id="odometer" accept="image/*" capture="environment">
+                <input type="file" id="odometer" accept="image/*">
                 <button type="button" id="deleteOdomBtn" class="delete-btn" title="Изчисти снимката">🗑️</button>
             </div>
         </div>
@@ -194,7 +217,7 @@
             <label for="receipt">🧾 Снимка на бележката:</label>
             <div class="file-input-container">
                 <span id="receiptStatus" class="upload-status"></span>
-                <input type="file" id="receipt" accept="image/*" capture="environment">
+                <input type="file" id="receipt" accept="image/*">
                 <button type="button" id="deleteReceBtn" class="delete-btn" title="Изчисти снимката">🗑️</button>
             </div>
         </div>
@@ -214,7 +237,10 @@
         <button id="cropBtn">✂️ Изрежи и запази</button>
     </div>
 
-    <button id="reloadBtn" style="display: none; margin-top: 15px; background-color: #007bff; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; padding: 14px; width: 100%;">➕ Ново зареждане</button>
+    <div id="actionButtonsContainer" class="action-buttons-container" style="display: none;">
+        <button type="button" id="closeBtn">Затвори</button>
+        <button type="button" id="reloadBtn">➕ Ново зареждане</button>
+    </div>
 </div>
 
 <script>
@@ -275,40 +301,61 @@
     odomInput.addEventListener('click', clearErrorOnClick);
     receInput.addEventListener('click', clearErrorOnClick);
 
-    // --- Логика за модалния прозорец за преглед ---
+    // --- Логика за бутоните след успешен запис ---
+    const closeBtn = document.getElementById('closeBtn');
+    const reloadBtn = document.getElementById('reloadBtn');
+
+    closeBtn.addEventListener('click', () => location.reload()); // Просто презарежда
+    reloadBtn.addEventListener('click', () => {
+        localStorage.removeItem('cachedOdomImage');
+        localStorage.removeItem('cachedReceImage');
+        location.reload();
+    });
+
     const previewModal = document.getElementById('previewModal');
     const previewImage = document.getElementById('previewImage');
+    const cropContainer = document.getElementById('crop-container');
+    const cropBox = document.getElementById('crop-box');
     const cropBtn = document.getElementById('cropBtn');
     const closeModalBtn = document.getElementById('closeModalBtn');
-    let cropper;
     let currentStorageKey;
     
     function openPreview(storageKey) {
+        const isOdometer = storageKey === 'cachedOdomImage';
+        const fileInput = document.getElementById(isOdometer ? 'odometer' : 'receipt');
         currentStorageKey = storageKey;
-        const cachedImage = localStorage.getItem(storageKey);
-        if (cachedImage) {
-            const imageData = JSON.parse(cachedImage);
-            previewImage.src = `data:image/jpeg;base64,${imageData.base64Data}`;
-            previewModal.style.display = 'block';
-            cropBtn.style.display = 'block';
 
-            if (cropper) {
-                cropper.destroy();
+        let imageSource = null;
+
+        // Приоритет 1: Използваме новоизбрания файл, ако има такъв (за да може да се изрязва винаги от оригинала)
+        if (fileInput.files.length > 0) {
+            imageSource = fileInput.files[0];
+        } else {
+            // Приоритет 2: Ако няма нов файл, търсим в локалната памет
+            const cachedImage = localStorage.getItem(storageKey);
+            if (cachedImage) {
+                imageSource = `data:image/jpeg;base64,${JSON.parse(cachedImage).base64Data}`;
             }
-            cropper = new Cropper(previewImage, {
-                viewMode: 1, // Ограничава изрязването в рамките на платното
-                background: false, // Премахва решетката зад изображението
-            });
         }
+
+        if (!imageSource) {
+            alert('Моля, първо изберете или качете снимка.');
+            return;
+        }
+
+        previewImage.src = (typeof imageSource === 'string') ? imageSource : URL.createObjectURL(imageSource);
+        previewModal.style.display = 'block';
+        setTimeout(() => {
+            const imgRect = previewImage.getBoundingClientRect();
+            cropBox.style.left = imgRect.left + (imgRect.width * 0.1) + 'px';
+            cropBox.style.top = imgRect.top + (imgRect.height * 0.1) + 'px';
+            cropBox.style.width = imgRect.width * 0.8 + 'px';
+            cropBox.style.height = imgRect.height * 0.8 + 'px';
+        }, 50);
     }
 
     function closePreview() {
         previewModal.style.display = 'none';
-        cropBtn.style.display = 'none';
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
     }
 
     document.getElementById('odomStatus').addEventListener('click', () => openPreview('cachedOdomImage'));
@@ -316,19 +363,77 @@
     closeModalBtn.addEventListener('click', closePreview);
     previewModal.addEventListener('click', (e) => { if (e.target === previewModal) closePreview(); }); // Затваряне при клик извън снимката
 
+    // --- Логика за местене и оразмеряване на crop-box ---
+    let isDragging = false, isResizing = false;
+    let startX, startY, startLeft, startTop, startWidth, startHeight;
+
+    cropBox.addEventListener('mousedown', (e) => {
+        if (e.target.classList.contains('handle')) {
+            isResizing = true;
+        } else {
+            isDragging = true;
+        }
+        startX = e.clientX;
+        startY = e.clientY;
+        startLeft = cropBox.offsetLeft;
+        startTop = cropBox.offsetTop;
+        startWidth = cropBox.offsetWidth;
+        startHeight = cropBox.offsetHeight;
+        e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            cropBox.style.left = startLeft + e.clientX - startX + 'px';
+            cropBox.style.top = startTop + e.clientY - startY + 'px';
+        } else if (isResizing) {
+            cropBox.style.width = startWidth + e.clientX - startX + 'px';
+            cropBox.style.height = startHeight + e.clientY - startY + 'px';
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+        isResizing = false;
+    });
+
     cropBtn.addEventListener('click', () => {
-        if (cropper && currentStorageKey) {
-            const canvas = cropper.getCroppedCanvas();
-            const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9); // Малко по-високо качество за изрязаната снимка
+        // Взимаме размерите на показаното изображение и на рамката за изрязване
+        const imgRect = previewImage.getBoundingClientRect();
+        const cropRect = cropBox.getBoundingClientRect();
+        
+        // Изчисляваме мащаба, за да съобразим показания размер с реалния размер на снимката
+        const scaleX = previewImage.naturalWidth / imgRect.width;
+        const scaleY = previewImage.naturalHeight / imgRect.height;
+
+        // Изчисляваме реалните координати и размери за изрязване от оригиналното изображение
+        const cropX = (cropRect.left - imgRect.left) * scaleX;
+        const cropY = (cropRect.top - imgRect.top) * scaleY;
+        const cropWidth = cropRect.width * scaleX;
+        const cropHeight = cropRect.height * scaleY;
+
+        // Създаваме временен canvas, върху който ще нарисуваме само изрязаната част
+        const canvas = document.createElement('canvas');
+        canvas.width = cropWidth;
+        canvas.height = cropHeight;
+        const ctx = canvas.getContext('2d');
+
+        // Рисуваме изрязаната част
+        ctx.drawImage(previewImage, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+        // Взимаме резултата като нова снимка
+        const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+        // Запазваме новата снимка в localStorage и актуализираме миниатюрата
+        if (currentStorageKey) {
             const newImageData = {
                 mimeType: 'image/jpeg',
                 base64Data: croppedDataUrl.split(',')[1]
             };
             localStorage.setItem(currentStorageKey, JSON.stringify(newImageData));
-            // Актуализираме миниатюрата
-            document.querySelector(`#${currentStorageKey === 'cachedOdomImage' ? 'odom' : 'receipt'}Status img`).src = croppedDataUrl;
-            closePreview();
+            document.querySelector(`#${currentStorageKey === 'cachedOdomImage' ? 'odom' : 'receipt'}Status img`).src = croppedDataUrl; // Актуализираме и миниатюрата
         }
+        closePreview();
     });
 
     // --- Логика за бутоните за изтриване на снимка ---
@@ -378,14 +483,6 @@
 
     odomInput.addEventListener('change', handleFileChange);
     receInput.addEventListener('change', handleFileChange);
-
-    // --- Логика за бутона "Ново зареждане" ---
-    document.getElementById('reloadBtn').addEventListener('click', () => {
-        // Изчистваме кешираните снимки преди презареждане
-        localStorage.removeItem('cachedOdomImage');
-        localStorage.removeItem('cachedReceImage');
-        location.reload();
-    });
 
     // При зареждане на страницата, проверяваме дали има вече кеширани снимки
     window.addEventListener('DOMContentLoaded', () => {
@@ -508,27 +605,42 @@ document.getElementById('fuelForm').addEventListener('submit', async (e) => {
         }
 
         statusBox.className = 'status info';
-        const data = result.data || {};
+        const rawData = result.raw_data || {};
+        const calculatedData = result.data || {};
+
+        // Подготвяме HTML за суровите данни
+        const rawDataHtml = `
+            <div style="text-align: left; margin-bottom: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
+                <b>Разчетени данни:</b><br>
+                Общ километраж: <b>${rawData.odometer_total || 'няма'}</b><br>
+                Дневен километраж: <b>${rawData.odometer_trip || 'няма'}</b><br>
+                Литри: <b>${rawData.liters || 'няма'}</b><br>
+                Цена/литър: <b>${rawData.price_per_liter || 'няма'}</b><br>
+                Отстъпка: <b>${rawData.discount || 'няма'}</b><br>
+                Обща сума: <b>${rawData.total_amount || 'няма'}</b><br>
+                Дата: <b>${rawData.receipt_date || 'няма'}</b><br>
+                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 8px 0;">
+                Реална цена (след отстъпки): <b>${( (Number(rawData.total_amount) || 0) / (Number(rawData.liters) || 1) ).toFixed(2)} €/литър</b>
+            </div>
+        `;
         
         // Изчисляваме реалната цена на литър от върнатите данни
-        const l_100 = Number(data.liters_per_100km) || 0;
-        const eur_100 = Number(data.euro_per_100km) || 0;
+        const l_100 = Number(calculatedData.liters_per_100km) || 0;
+        const eur_100 = Number(calculatedData.euro_per_100km) || 0;
         const calculatedPricePerLiter = (l_100 > 0) ? (eur_100 / l_100).toFixed(2) : '0.00';
-        const centsPerKm = ((Number(data.euro_per_km) || 0) * 100).toFixed(1);
+        const centsPerKm = ((Number(calculatedData.euro_per_km) || 0) * 100).toFixed(1);
 
         let warningMessage = '';
         if (l_100 > 10) {
             warningMessage = `<br><span style="color: #c65911; font-weight: bold;">Разходът е по-висок от оптималния!</span>`;
         }
 
-        statusBox.innerHTML = `✅ Успешен запис на данните!<br><br>
-            Реална цена (след отстъпката): <b>${calculatedPricePerLiter} €/л</b><br><br>
-            Разход: <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b><br>
-            <b>${calculatedPricePerLiter} €/литър</b> | <b>${centsPerKm} цента/км</b>`
+        statusBox.innerHTML = rawDataHtml + `✅ Успешен запис на данните!<br><br>
+            <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} цента/км</b>`
             + warningMessage;
         
         document.getElementById('fuelForm').style.display = 'none'; // Скриваме формата
-        document.getElementById('reloadBtn').style.display = 'block'; // Показваме бутона за презареждане
+        document.getElementById('actionButtonsContainer').style.display = 'flex'; // Показваме контейнера с бутоните
 
     } catch (err) {
         console.error('❌ [FRONTEND ERROR]:', err);
@@ -539,56 +651,6 @@ document.getElementById('fuelForm').addEventListener('submit', async (e) => {
     }
 });
 
-    // document.getElementById('fuelForm').addEventListener('submit', async (e) => {
-    //     e.preventDefault();
-        
-    //     const submitBtn = document.getElementById('submitBtn');
-    //     const statusBox = document.getElementById('statusBox');
-        
-    //     submitBtn.disabled = true;
-    //     statusBox.className = 'status info';
-    //     statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
-
-    //     try {
-    //         const odomFile = document.getElementById('odometer').files[0];
-    //         const receFile = document.getElementById('receipt').files[0];
-
-    //         // Компресиране на двете снимки
-    //         const odomCompressed = await compressImage(odomFile);
-    //         const receCompressed = await compressImage(receFile);
-
-    //         const payload = {
-    //             password: document.getElementById('password').value,
-    //             vehicle: document.getElementById('vehicle').value,
-    //             odometerImage: odomCompressed,
-    //             receiptImage: receCompressed
-    //         };
-
-    //         // Извикваме Serverless функцията на Netlify
-    //         const response = await fetch('/.netlify/functions/process-fuel', {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify(payload)
-    //         });
-
-    //         const result = await response.json();
-
-    //         if (!response.ok) {
-    //             throw new Error(result.error || 'Възникна грешка при обработката.');
-    //         }
-
-    //         statusBox.className = 'status info';
-    //         statusBox.innerHTML = `✅ Успешно записване!<br>Намерен разход: <b>${result.consumption || 'Изчислен'} л/100км</b>`;
-    //         document.getElementById('fuelForm').reset();
-
-    //     } catch (err) {
-    //         statusBox.className = 'status error';
-    //         statusBox.innerText = '❌ Грешка: ' + err.message;
-    //     } finally {
-    //         submitBtn.disabled = false;
-    //     }
-    // });
-    
 </script>
 
 </body>
