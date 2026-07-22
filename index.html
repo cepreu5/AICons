@@ -67,6 +67,70 @@
             transform: translateX(14px); 
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='gold'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'%3E%3C/path%3E%3C/svg%3E");
         }
+        .upload-status {
+            width: 0; /* Няма ширина, когато е празен */
+            height: 40px;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .upload-status img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-color); /* Деликатна рамка */
+            padding: 2px;
+            background-color: var(--input-bg);
+        }
+        .file-input-container {
+            display: flex;
+            align-items: center;
+        }
+        .vehicle-select-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #vehicle {
+            flex-grow: 1; /* Позволява на select-а да заеме оставащото място */
+        }
+        #pinVehicleBtn {
+            width: 40px; /* Фиксирана ширина за бутона */
+            flex-shrink: 0; /* Предотвратява свиването на бутона */
+            padding: 10px;
+            background-color: var(--border-color);
+        }
+        .delete-btn {
+            width: 40px;
+            flex-shrink: 0;
+            padding: 10px;
+            background-color: var(--border-color); /* Променяме цвета да е като на кабърчето */
+            color: var(--text-color);
+            margin-left: 10px;
+        }
+        .modal-overlay {
+            position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.85); display: none;
+        }
+        .modal-content {
+            margin: auto; display: block; max-width: 90%; max-height: 80%;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+        .modal-close {
+            position: absolute; top: 15px; right: 35px; color: #f1f1f1;
+            font-size: 40px; font-weight: bold; cursor: pointer;
+        }
+        .upload-status img {
+            cursor: pointer; /* Добавяме курсор, за да индикираме, че може да се кликне */
+        }
+        .file-input-container input[type="file"].with-thumbnail {
+            margin-left: 10px; /* Добавяме разстояние само когато има миниатюра */
+        }
+        .file-input-container input[type="file"] {
+            flex-grow: 1; /* Полето заема цялата ширина */
+        }
     </style>
     <script src="vehicles.js"></script>
 </head>
@@ -89,25 +153,41 @@
 
         <div class="form-group">
             <label for="vehicle">🚗 Автомобил:</label>
-            <select id="vehicle">
-
-            </select>
+            <div class="vehicle-select-container">
+                <select id="vehicle">
+                </select>
+                <button type="button" id="pinVehicleBtn" title="Запази като избор по подразбиране">📌</button>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="odometer">📸 Снимка на километража:</label>
-            <input type="file" id="odometer" accept="image/*">
+            <div class="file-input-container">
+                <span id="odomStatus" class="upload-status"></span>
+                <input type="file" id="odometer" accept="image/*" capture="environment">
+                <button type="button" id="deleteOdomBtn" class="delete-btn" title="Изчисти снимката">🗑️</button>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="receipt">🧾 Снимка на бележката:</label>
-            <input type="file" id="receipt" accept="image/*">
+            <div class="file-input-container">
+                <span id="receiptStatus" class="upload-status"></span>
+                <input type="file" id="receipt" accept="image/*" capture="environment">
+                <button type="button" id="deleteReceBtn" class="delete-btn" title="Изчисти снимката">🗑️</button>
+            </div>
         </div>
 
         <button type="submit" id="submitBtn">🚀 Изпрати и анализирай</button>
     </form>
 
     <div id="statusBox" class="status"></div>
+
+    <!-- Модален прозорец за преглед на снимка -->
+    <div id="previewModal" class="modal-overlay">
+        <span class="modal-close" id="closeModalBtn">&times;</span>
+        <img class="modal-content" id="previewImage">
+    </div>
 
     <button id="reloadBtn" style="display: none; margin-top: 15px; background-color: #007bff; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; padding: 14px; width: 100%;">➕ Ново зареждане</button>
 </div>
@@ -140,6 +220,22 @@
         applyTheme(newTheme);
     });
 
+    // --- Логика за запазване на автомобил по подразбиране ---
+    const vehicleSelect = document.getElementById('vehicle');
+    const pinVehicleBtn = document.getElementById('pinVehicleBtn');
+
+    pinVehicleBtn.addEventListener('click', () => {
+        const selectedVehicleId = vehicleSelect.value;
+        localStorage.setItem('defaultVehicleId', selectedVehicleId);
+        // Може да добавим визуална индикация, че е запазено
+        pinVehicleBtn.style.backgroundColor = '#28a745';
+        setTimeout(() => {
+            pinVehicleBtn.style.backgroundColor = 'var(--border-color)';
+        }, 1500);
+    });
+
+    // Логиката за зареждане на запазения автомобил е в 'DOMContentLoaded' по-долу
+
     // --- Логика за изчистване на грешката при избор на файл ---
     const odomInput = document.getElementById('odometer');
     const receInput = document.getElementById('receipt');
@@ -153,7 +249,107 @@
     odomInput.addEventListener('click', clearErrorOnClick);
     receInput.addEventListener('click', clearErrorOnClick);
 
-    document.getElementById('reloadBtn').addEventListener('click', () => location.reload());
+    // --- Логика за модалния прозорец за преглед ---
+    const previewModal = document.getElementById('previewModal');
+    const previewImage = document.getElementById('previewImage');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    function openPreview(storageKey) {
+        const cachedImage = localStorage.getItem(storageKey);
+        if (cachedImage) {
+            const imageData = JSON.parse(cachedImage);
+            previewImage.src = `data:image/jpeg;base64,${imageData.base64Data}`;
+            previewModal.style.display = 'block';
+        }
+    }
+
+    function closePreview() {
+        previewModal.style.display = 'none';
+    }
+
+    document.getElementById('odomStatus').addEventListener('click', () => openPreview('cachedOdomImage'));
+    document.getElementById('receiptStatus').addEventListener('click', () => openPreview('cachedReceImage'));
+    closeModalBtn.addEventListener('click', closePreview);
+    previewModal.addEventListener('click', (e) => { if (e.target === previewModal) closePreview(); }); // Затваряне при клик извън снимката
+
+    // --- Логика за бутоните за изтриване на снимка ---
+    const deleteOdomBtn = document.getElementById('deleteOdomBtn');
+    const deleteReceBtn = document.getElementById('deleteReceBtn');
+
+    deleteOdomBtn.addEventListener('click', () => {
+        localStorage.removeItem('cachedOdomImage');
+        document.getElementById('odomStatus').innerHTML = '';
+        document.getElementById('odomStatus').style.width = '0';
+        odomInput.classList.remove('with-thumbnail');
+        odomInput.value = ''; // Изчистваме и стойността на полето
+    });
+
+    deleteReceBtn.addEventListener('click', () => {
+        localStorage.removeItem('cachedReceImage');
+        document.getElementById('receiptStatus').innerHTML = '';
+        document.getElementById('receiptStatus').style.width = '0';
+        receInput.classList.remove('with-thumbnail');
+        receInput.value = ''; // Изчистваме и стойността на полето
+    });
+
+    // --- Логика за асинхронно качване и кеширане на снимките ---
+    async function handleFileChange(event) {
+        const input = event.target;
+        const isOdometer = input.id === 'odometer';
+        const statusEl = document.getElementById(isOdometer ? 'odomStatus' : 'receiptStatus');
+        const storageKey = isOdometer ? 'cachedOdomImage' : 'cachedReceImage';
+
+        if (input.files.length === 0) return;
+
+        statusEl.innerHTML = '⏳ Обработка...';
+        try {
+            const compressedImage = await compressImage(input.files[0]);
+            localStorage.setItem(storageKey, JSON.stringify(compressedImage));
+            // Показваме миниатюра на качената снимка
+            input.classList.add('with-thumbnail'); // Добавяме клас за полето
+            statusEl.style.width = '44px'; // Задаваме ширина, за да се покаже
+            statusEl.innerHTML = `<img src="data:image/jpeg;base64,${compressedImage.base64Data}" alt="uploaded">`;
+        } catch (err) {
+            input.classList.remove('with-thumbnail');
+            statusEl.style.width = 'auto';
+            statusEl.innerHTML = '❌ Грешка';
+            console.error('Грешка при компресиране:', err);
+        }
+    }
+
+    odomInput.addEventListener('change', handleFileChange);
+    receInput.addEventListener('change', handleFileChange);
+
+    // --- Логика за бутона "Ново зареждане" ---
+    document.getElementById('reloadBtn').addEventListener('click', () => {
+        // Изчистваме кешираните снимки преди презареждане
+        localStorage.removeItem('cachedOdomImage');
+        localStorage.removeItem('cachedReceImage');
+        location.reload();
+    });
+
+    // При зареждане на страницата, проверяваме дали има вече кеширани снимки
+    window.addEventListener('DOMContentLoaded', () => {
+        const cachedOdom = localStorage.getItem('cachedOdomImage');
+        const cachedRece = localStorage.getItem('cachedReceImage');
+        if (cachedOdom) {
+            odomInput.classList.add('with-thumbnail');
+            document.getElementById('odomStatus').style.width = '44px';
+            document.getElementById('odomStatus').innerHTML = `<img src="data:image/jpeg;base64,${JSON.parse(cachedOdom).base64Data}" alt="cached">`;
+        }
+        if (cachedRece) {
+            receInput.classList.add('with-thumbnail');
+            document.getElementById('receiptStatus').style.width = '44px';
+            document.getElementById('receiptStatus').innerHTML = `<img src="data:image/jpeg;base64,${JSON.parse(cachedRece).base64Data}" alt="cached">`;
+        }
+
+        // Зареждаме автомобила по подразбиране, СЛЕД като опциите са се заредили
+        const defaultVehicleId = localStorage.getItem('defaultVehicleId');
+        if (defaultVehicleId && vehicleSelect.querySelector(`option[value="${defaultVehicleId}"]`)) {
+            vehicleSelect.value = defaultVehicleId;
+        }
+    });
+
     // Функция за клиентска компресия през HTML5 Canvas
     function compressImage(file, maxDimension = 1920, quality = 0.8) {
         return new Promise((resolve, reject) => {
@@ -206,30 +402,21 @@ document.getElementById('fuelForm').addEventListener('submit', async (e) => {
     statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
 
     try {
-        console.log('🔍 [FRONTEND STEP 1] Четене и компресиране на снимките...');
+        console.log('🔍 [FRONTEND STEP 1] Взимане на снимките от локалната памет...');
+        const cachedOdom = localStorage.getItem('cachedOdomImage');
+        const cachedRece = localStorage.getItem('cachedReceImage');
 
-        // --- Стандартна логика (без кеширане) ---
-        if (odomInput.files.length === 0 || receInput.files.length === 0) {
-            throw new Error('Моля, изберете и двете снимки.');
+        if (!cachedOdom || !cachedRece) {
+            throw new Error('Моля, качете и двете снимки преди да продължите.');
         }
-        const [odomCompressed, receCompressed] = await Promise.all([
-            compressImage(odomInput.files[0]),
-            compressImage(receInput.files[0])
-        ]);
 
-        /*
-        // --- Логика за кеширане на снимките в localStorage (за тестване) ---
-        // За да я активирате, коментирайте горния блок и разкоментирайте този.
-        // ... (тук се намираше кодът за кеширане) ...
-        */
-
-        console.log('✅ [FRONTEND STEP 1] Снимките са компресирани успешно.');
+        console.log('✅ [FRONTEND STEP 1] Снимките са налични.');
 
         const payload = {
             password: document.getElementById('password').value,
             vehicle: document.getElementById('vehicle').value,
-            odometerImage: odomCompressed,
-            receiptImage: receCompressed
+            odometerImage: JSON.parse(cachedOdom),
+            receiptImage: JSON.parse(cachedRece)
         };
 
         console.log('🔍 [FRONTEND STEP 2] Изпращане на заявка към Netlify Function...');
@@ -276,8 +463,9 @@ document.getElementById('fuelForm').addEventListener('submit', async (e) => {
         }
 
         statusBox.innerHTML = `✅ Успешен запис на данните!<br><br>
-            Реална цена (след отстъпката): <b>${calculatedPricePerLiter} €/литър</b><br><br>
-            Разход: <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} цента/км</b><br><br>`
+            Реална цена (след отстъпката): <b>${calculatedPricePerLiter} €/л</b><br><br>
+            Разход: <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b><br>
+            <b>${calculatedPricePerLiter} €/литър</b> | <b>${centsPerKm} цента/км</b>`
             + warningMessage;
         
         document.getElementById('fuelForm').style.display = 'none'; // Скриваме формата
