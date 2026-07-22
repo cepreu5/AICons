@@ -115,12 +115,33 @@
             overflow: auto; background-color: rgba(0,0,0,0.85); display: none;
         }
         .modal-content {
-            margin: auto; display: block; max-width: 90%; max-height: 80%;
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90vw;
+            max-height: 75vh;
+        }
+        #crop-box {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+            cursor: move;
+        }
+        .handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #333;
+        }
+        .handle.br { bottom: -5px; right: -5px; cursor: se-resize; }
+        #cropBtn {
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            width: auto; padding: 12px 24px;
         }
         .modal-close {
             position: absolute; top: 15px; right: 35px; color: #f1f1f1;
             font-size: 40px; font-weight: bold; cursor: pointer;
+            z-index: 101; /* Да е над всичко друго в модала */
         }
         .upload-status img {
             cursor: pointer; /* Добавяме курсор, за да индикираме, че може да се кликне */
@@ -186,7 +207,11 @@
     <!-- Модален прозорец за преглед на снимка -->
     <div id="previewModal" class="modal-overlay">
         <span class="modal-close" id="closeModalBtn">&times;</span>
-        <img class="modal-content" id="previewImage">
+        <div id="crop-container">
+            <img id="previewImage" class="modal-content">
+            <div id="crop-box"><div class="handle br"></div></div>
+        </div>
+        <button id="cropBtn">✂️ Изрежи и запази</button>
     </div>
 
     <button id="reloadBtn" style="display: none; margin-top: 15px; background-color: #007bff; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; padding: 14px; width: 100%;">➕ Ново зареждане</button>
@@ -194,6 +219,7 @@
 
 <script>
     // --- Логика за Тъмна Тема ---
+    // ... (съществуващият код остава същият) ...
     const themeToggle = document.getElementById('themeToggle');
     const currentTheme = localStorage.getItem('theme');
 
@@ -252,25 +278,58 @@
     // --- Логика за модалния прозорец за преглед ---
     const previewModal = document.getElementById('previewModal');
     const previewImage = document.getElementById('previewImage');
+    const cropBtn = document.getElementById('cropBtn');
     const closeModalBtn = document.getElementById('closeModalBtn');
-
+    let cropper;
+    let currentStorageKey;
+    
     function openPreview(storageKey) {
+        currentStorageKey = storageKey;
         const cachedImage = localStorage.getItem(storageKey);
         if (cachedImage) {
             const imageData = JSON.parse(cachedImage);
             previewImage.src = `data:image/jpeg;base64,${imageData.base64Data}`;
             previewModal.style.display = 'block';
+            cropBtn.style.display = 'block';
+
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(previewImage, {
+                viewMode: 1, // Ограничава изрязването в рамките на платното
+                background: false, // Премахва решетката зад изображението
+            });
         }
     }
 
     function closePreview() {
         previewModal.style.display = 'none';
+        cropBtn.style.display = 'none';
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
     }
 
     document.getElementById('odomStatus').addEventListener('click', () => openPreview('cachedOdomImage'));
     document.getElementById('receiptStatus').addEventListener('click', () => openPreview('cachedReceImage'));
     closeModalBtn.addEventListener('click', closePreview);
     previewModal.addEventListener('click', (e) => { if (e.target === previewModal) closePreview(); }); // Затваряне при клик извън снимката
+
+    cropBtn.addEventListener('click', () => {
+        if (cropper && currentStorageKey) {
+            const canvas = cropper.getCroppedCanvas();
+            const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9); // Малко по-високо качество за изрязаната снимка
+            const newImageData = {
+                mimeType: 'image/jpeg',
+                base64Data: croppedDataUrl.split(',')[1]
+            };
+            localStorage.setItem(currentStorageKey, JSON.stringify(newImageData));
+            // Актуализираме миниатюрата
+            document.querySelector(`#${currentStorageKey === 'cachedOdomImage' ? 'odom' : 'receipt'}Status img`).src = croppedDataUrl;
+            closePreview();
+        }
+    });
 
     // --- Логика за бутоните за изтриване на снимка ---
     const deleteOdomBtn = document.getElementById('deleteOdomBtn');
@@ -529,6 +588,7 @@ document.getElementById('fuelForm').addEventListener('submit', async (e) => {
     //         submitBtn.disabled = false;
     //     }
     // });
+    
 </script>
 
 </body>
