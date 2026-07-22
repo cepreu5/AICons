@@ -56,7 +56,7 @@
             height: 22px; 
             border-radius: 50%; 
             transition: transform 0.3s, background-image 0.3s;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='orange' stroke='white' stroke-width='1'%3E%3Ccircle cx='12' cy='12' r='5'%3E%3C/circle%3E%3Cline x1='12' y1='1' x2='12' y2='3'%3E%3C/line%3E%3Cline x1='12' y1='21' x2='12' y2='23'%3E%3C/line%3E%3Cline x1='4.22' y1='4.22' x2='5.64' y2='5.64'%3E%3C/line%3E%3Cline x1='18.36' y1='18.36' x2='19.78' y2='19.78'%3E%3C/line%3E%3Cline x1='1' y1='12' x2='3' y2='12'%3E%3C/line%3E%3Cline x1='21' y1='12' x2='23' y2='12'%3E%3C/line%3E%3Cline x1='4.22' y1='19.78' x2='5.64' y2='18.36'%3E%3C/line%3E%3Cline x1='18.36' y1='5.64' x2='19.78' y2='4.22'%3E%3C/line%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='orange' stroke='white' stroke-width='1'%3E%3Ccircle cx='12' cy='12' r='5'%3E%3C/circle%3E%3Cline x1='12' y1='1' x2='12' y2='3'%3E%3C/line%3E%3Cline x1='12' y1='21' x2='12' y2='23'%3E%3C/line%3E%3Cline x1='4.22' y1='4.22' x2='5.64' y2='5.64'%3E%3C/line%3E%3Cline x1='18.36' y1='18.36' x2='19.78' y2='19.78'%3E%3C/line%3E%3Cline x1='1' y1='12' x2='3' y2='12'%3E%3C/line%3E%3Cline x1='21' y1='12' x2='23' y2='12'%3E%3C/line%3E%3Cline x1='4.22' y1='19.78' x2='5.64' y2='18.36'%3E%3C/line%3E%3Cline x1='18.36' y1='5.64' x2='19.78' y2='4.22'%3E%3C/svg%3E");
             background-size: 16px;
             background-position: center;
             background-repeat: no-repeat;
@@ -120,27 +120,37 @@
         .modal-overlay {
             position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
             overflow: auto; background-color: rgba(0,0,0,0.85); display: none;
+            touch-action: none;
         }
         .modal-content {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             max-width: 90vw;
             max-height: 75vh;
+            user-select: none;
         }
         #crop-box {
             position: absolute;
             border: 2px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
             cursor: move;
+            touch-action: none;
         }
         .handle {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border: 1px solid #333;
+            width: 20px;
+            height: 20px;
+            background-color: #007bff;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+            z-index: 10;
+            touch-action: none;
         }
-        .handle.br { bottom: -5px; right: -5px; cursor: se-resize; }
+        .handle.tl { top: -10px; left: -10px; cursor: nwse-resize; }
+        .handle.tr { top: -10px; right: -10px; cursor: nesw-resize; }
+        .handle.bl { bottom: -10px; left: -10px; cursor: nesw-resize; }
+        .handle.br { bottom: -10px; right: -10px; cursor: nwse-resize; }
         #cropBtn {
             position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: auto; padding: 12px 24px;
@@ -208,10 +218,7 @@
     <h1 id="mainTitle">⛽ Нов запис за гориво</h1>
     
     <form id="fuelForm">
-        <div class="form-group">
-            <label for="password">🔑 Парола за достъп:</label>
-            <input type="password" id="password" required placeholder="Въведете парола" value="123">
-        </div>
+        <input type="hidden" id="password" value="123">
 
         <div class="form-group">
             <label for="vehicle">🚗 Автомобил:</label>
@@ -226,8 +233,8 @@
             <label for="odometer">📸 Снимка на километража:</label>
             <div class="file-input-container">
                 <span id="odomStatus" class="upload-status"></span>
-                <input type="file" id="odometer" accept="image/*" capture="environment">
-                <button type="button" id="deleteOdomBtn" class="delete-btn" title="Изчисти снимката">🗑️</button>
+                <input type="file" id="odometer" accept="image/*">
+                <button type="button" id="deleteOdomBtn" class="delete-btn" title="Изчисти снимката и полетата">🗑️</button>
             </div>
             <div class="manual-inputs-grid">
                 <div style="flex: 1;">
@@ -245,8 +252,8 @@
             <label for="receipt">🧾 Снимка на бележката:</label>
             <div class="file-input-container">
                 <span id="receiptStatus" class="upload-status"></span>
-                <input type="file" id="receipt" accept="image/*" capture="environment">
-                <button type="button" id="deleteReceBtn" class="delete-btn" title="Изчисти снимката">🗑️</button>
+                <input type="file" id="receipt" accept="image/*">
+                <button type="button" id="deleteReceBtn" class="delete-btn" title="Изчисти снимката и полетата">🗑️</button>
             </div>
             <div class="manual-inputs-grid">
                 <div style="flex: 1;">
@@ -275,7 +282,12 @@
         <span class="modal-close" id="closeModalBtn">&times;</span>
         <div id="crop-container">
             <img id="previewImage" class="modal-content">
-            <div id="crop-box"><div class="handle br"></div></div>
+            <div id="crop-box">
+                <div class="handle tl" data-handle="tl"></div>
+                <div class="handle tr" data-handle="tr"></div>
+                <div class="handle bl" data-handle="bl"></div>
+                <div class="handle br" data-handle="br"></div>
+            </div>
         </div>
         <button id="cropBtn">✂️ Изрежи и запази</button>
     </div>
@@ -360,7 +372,7 @@
         }
     }
 
-    function clearOdomImage() {
+    function clearOdomPhotoOnly() {
         localStorage.removeItem('cachedOdomImage');
         document.getElementById('odomStatus').innerHTML = '';
         document.getElementById('odomStatus').style.width = '0';
@@ -368,17 +380,23 @@
         odomInput.value = '';
     }
 
+    function clearOdomAll() {
+        clearOdomPhotoOnly();
+        document.getElementById('manualOdoTotal').value = '';
+        document.getElementById('manualOdoTrip').value = '';
+    }
+
     function handleOdoManualInput() {
         const tot = document.getElementById('manualOdoTotal').value.trim();
         const trp = document.getElementById('manualOdoTrip').value.trim();
         if (tot !== '' || trp !== '') {
-            clearOdomImage();
+            clearOdomPhotoOnly();
         }
     }
     document.getElementById('manualOdoTotal').addEventListener('input', handleOdoManualInput);
     document.getElementById('manualOdoTrip').addEventListener('input', handleOdoManualInput);
 
-    function clearReceImage() {
+    function clearRecePhotoOnly() {
         localStorage.removeItem('cachedReceImage');
         document.getElementById('receiptStatus').innerHTML = '';
         document.getElementById('receiptStatus').style.width = '0';
@@ -386,11 +404,18 @@
         receInput.value = '';
     }
 
+    function clearReceAll() {
+        clearRecePhotoOnly();
+        document.getElementById('manualTotalAmount').value = '';
+        document.getElementById('manualDiscount').value = '';
+        document.getElementById('manualLiters').value = '';
+    }
+
     function handleReceManualInput() {
         const tot = document.getElementById('manualTotalAmount').value.trim();
         const lit = document.getElementById('manualLiters').value.trim();
         if (tot !== '' && lit !== '') {
-            clearReceImage();
+            clearRecePhotoOnly();
         }
     }
     document.getElementById('manualTotalAmount').addEventListener('input', handleReceManualInput);
@@ -482,38 +507,80 @@
     closeModalBtn.addEventListener('click', closePreview);
     previewModal.addEventListener('click', (e) => { if (e.target === previewModal) closePreview(); });
 
-    let isDragging = false, isResizing = false;
+    let isDragging = false, activeHandle = null;
     let startX, startY, startLeft, startTop, startWidth, startHeight;
 
-    cropBox.addEventListener('mousedown', (e) => {
-        if (e.target.classList.contains('handle')) {
-            isResizing = true;
-        } else {
-            isDragging = true;
-        }
-        startX = e.clientX;
-        startY = e.clientY;
+    function getClientPos(e) {
+        if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        return { x: e.clientX, y: e.clientY };
+    }
+
+    function startInteraction(e) {
+        const pos = getClientPos(e);
+        startX = pos.x;
+        startY = pos.y;
         startLeft = cropBox.offsetLeft;
         startTop = cropBox.offsetTop;
         startWidth = cropBox.offsetWidth;
         startHeight = cropBox.offsetHeight;
-        e.preventDefault();
-    });
-
-    window.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            cropBox.style.left = startLeft + e.clientX - startX + 'px';
-            cropBox.style.top = startTop + e.clientY - startY + 'px';
-        } else if (isResizing) {
-            cropBox.style.width = startWidth + e.clientX - startX + 'px';
-            cropBox.style.height = startHeight + e.clientY - startY + 'px';
+        if (e.target.classList.contains('handle')) {
+            activeHandle = e.target.getAttribute('data-handle');
+        } else {
+            isDragging = true;
         }
-    });
+    }
 
-    window.addEventListener('mouseup', () => {
+    function moveInteraction(e) {
+        if (!isDragging && !activeHandle) return;
+        const pos = getClientPos(e);
+        const dx = pos.x - startX;
+        const dy = pos.y - startY;
+        if (isDragging) {
+            cropBox.style.left = (startLeft + dx) + 'px';
+            cropBox.style.top = (startTop + dy) + 'px';
+        } else if (activeHandle) {
+            if (activeHandle === 'br') {
+                cropBox.style.width = Math.max(30, startWidth + dx) + 'px';
+                cropBox.style.height = Math.max(30, startHeight + dy) + 'px';
+            } else if (activeHandle === 'bl') {
+                const nw = Math.max(30, startWidth - dx);
+                cropBox.style.width = nw + 'px';
+                cropBox.style.left = (startLeft + (startWidth - nw)) + 'px';
+                cropBox.style.height = Math.max(30, startHeight + dy) + 'px';
+            } else if (activeHandle === 'tr') {
+                const nh = Math.max(30, startHeight - dy);
+                cropBox.style.width = Math.max(30, startWidth + dx) + 'px';
+                cropBox.style.height = nh + 'px';
+                cropBox.style.top = (startTop + (startHeight - nh)) + 'px';
+            } else if (activeHandle === 'tl') {
+                const nw = Math.max(30, startWidth - dx);
+                const nh = Math.max(30, startHeight - dy);
+                cropBox.style.width = nw + 'px';
+                cropBox.style.left = (startLeft + (startWidth - nw)) + 'px';
+                cropBox.style.height = nh + 'px';
+                cropBox.style.top = (startTop + (startHeight - nh)) + 'px';
+            }
+        }
+    }
+
+    function endInteraction() {
         isDragging = false;
-        isResizing = false;
-    });
+        activeHandle = null;
+    }
+
+    cropBox.addEventListener('mousedown', startInteraction);
+    cropBox.addEventListener('touchstart', (e) => { startInteraction(e); }, { passive: false });
+
+    window.addEventListener('mousemove', moveInteraction);
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging || activeHandle) {
+            if (e.cancelable) e.preventDefault();
+            moveInteraction(e);
+        }
+    }, { passive: false });
+
+    window.addEventListener('mouseup', endInteraction);
+    window.addEventListener('touchend', endInteraction);
 
     cropBtn.addEventListener('click', () => {
         const imgRect = previewImage.getBoundingClientRect();
@@ -544,8 +611,8 @@
     const deleteOdomBtn = document.getElementById('deleteOdomBtn');
     const deleteReceBtn = document.getElementById('deleteReceBtn');
 
-    deleteOdomBtn.addEventListener('click', () => clearOdomImage());
-    deleteReceBtn.addEventListener('click', () => clearReceImage());
+    deleteOdomBtn.addEventListener('click', () => clearOdomAll());
+    deleteReceBtn.addEventListener('click', () => clearReceAll());
 
     async function handleFileChange(event) {
         const input = event.target;
@@ -634,15 +701,12 @@
         e.preventDefault();
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
-        statusBox.className = 'status info';
-        statusBox.innerText = '⏳ Обработка на данните...';
         try {
             const manualTotAmt = document.getElementById('manualTotalAmount').value.trim();
             const manualLit = document.getElementById('manualLiters').value.trim();
             const manualOdoTotStr = document.getElementById('manualOdoTotal').value.trim();
             const manualOdoTripStr = document.getElementById('manualOdoTrip').value.trim();
             const isFullManual = (manualTotAmt !== '' && manualLit !== '') && (manualOdoTotStr !== '' || manualOdoTripStr !== '');
-            let payload = {};
             if (isFullManual) {
                 const computedOdoTotal = parseAndComputeOdometerTotal(manualOdoTotStr);
                 const pricePerLit = (Number(manualTotAmt) / Number(manualLit)).toFixed(2);
@@ -656,37 +720,80 @@
                     total_amount: Number(manualTotAmt),
                     receipt_date: new Date().toISOString().slice(0, 16).replace('T', ' ')
                 };
-                payload = {
-                    password: document.getElementById('password').value,
-                    vehicle: document.getElementById('vehicle').value,
-                    isManual: true,
-                    manualData: manualData
+                let distance = 0;
+                if (manualData.odometer_trip && manualData.odometer_trip > 0) {
+                    distance = manualData.odometer_trip;
+                } else if (manualData.odometer_total) {
+                    let prevTot = null;
+                    for (let entry of history) {
+                        if (entry.raw_data && entry.raw_data.odometer_total) {
+                            prevTot = Number(entry.raw_data.odometer_total);
+                            break;
+                        }
+                    }
+                    if (prevTot !== null && manualData.odometer_total > prevTot) {
+                        distance = manualData.odometer_total - prevTot;
+                    }
+                }
+                const l_100 = distance > 0 ? (manualData.liters / distance) * 100 : 0;
+                const eur_100 = distance > 0 ? (manualData.total_amount / distance) * 100 : 0;
+                const eur_km = distance > 0 ? (manualData.total_amount / distance) : 0;
+                const newEntry = {
+                    raw_data: manualData,
+                    calculated_data: {
+                        liters_per_100km: l_100.toFixed(2),
+                        euro_per_100km: eur_100.toFixed(2),
+                        euro_per_km: eur_km.toFixed(4)
+                    }
                 };
-            } else {
-                let odomCompressed = null;
-                let receCompressed = null;
-                const cachedOdom = localStorage.getItem('cachedOdomImage');
-                const cachedRece = localStorage.getItem('cachedReceImage');
-                if (odomInput.files.length > 0) {
-                    odomCompressed = await compressImage(odomInput.files[0]);
-                } else if (cachedOdom) {
-                    odomCompressed = JSON.parse(cachedOdom);
+                history.unshift(newEntry);
+                if (history.length > 10) {
+                    history.pop();
                 }
-                if (receInput.files.length > 0) {
-                    receCompressed = await compressImage(receInput.files[0]);
-                } else if (cachedRece) {
-                    receCompressed = JSON.parse(cachedRece);
-                }
-                if (!odomCompressed || !receCompressed) {
-                    throw new Error('Моля, качете и двете снимки или попълнете ръчните стойности.');
-                }
-                payload = {
-                    password: document.getElementById('password').value,
-                    vehicle: document.getElementById('vehicle').value,
-                    odometerImage: odomCompressed,
-                    receiptImage: receCompressed
-                };
+                localStorage.setItem('fuelHistory', JSON.stringify(history));
+                currentHistoryIndex = 0;
+                displayHistoryEntry(currentHistoryIndex);
+                document.getElementById('fuelForm').style.display = 'none';
+                document.getElementById('actionButtonsContainer').style.display = 'flex';
+                updateViewHistoryBtn();
+                submitBtn.disabled = false;
+                fetch('/.netlify/functions/process-fuel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password: document.getElementById('password').value,
+                        vehicle: document.getElementById('vehicle').value,
+                        isManual: true,
+                        manualData: manualData
+                    })
+                }).catch(err => console.error('Background sync error:', err));
+                return;
             }
+            statusBox.className = 'status info';
+            statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
+            let odomCompressed = null;
+            let receCompressed = null;
+            const cachedOdom = localStorage.getItem('cachedOdomImage');
+            const cachedRece = localStorage.getItem('cachedReceImage');
+            if (odomInput.files.length > 0) {
+                odomCompressed = await compressImage(odomInput.files[0]);
+            } else if (cachedOdom) {
+                odomCompressed = JSON.parse(cachedOdom);
+            }
+            if (receInput.files.length > 0) {
+                receCompressed = await compressImage(receInput.files[0]);
+            } else if (cachedRece) {
+                receCompressed = JSON.parse(cachedRece);
+            }
+            if (!odomCompressed || !receCompressed) {
+                throw new Error('Моля, качете и двете снимки или попълнете ръчните стойности.');
+            }
+            const payload = {
+                password: document.getElementById('password').value,
+                vehicle: document.getElementById('vehicle').value,
+                odometerImage: odomCompressed,
+                receiptImage: receCompressed
+            };
             const response = await fetch('/.netlify/functions/process-fuel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
