@@ -175,6 +175,21 @@
         button#reloadBtn[style*="display: none"] {
             display: none !important;
         }
+        .history-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+        .history-nav button {
+            width: 50px;
+            padding: 8px;
+            font-size: 20px;
+            background-color: var(--border-color);
+        }
+        #historyCounter { font-size: 14px; color: var(--text-color); }
     </style>
     <script src="vehicles.js"></script>
 </head>
@@ -244,6 +259,8 @@
 </div>
 
 <script>
+    let history = [];
+    let currentHistoryIndex = 0;
     // --- Логика за Тъмна Тема ---
     // ... (съществуващият код остава същият) ...
     const themeToggle = document.getElementById('themeToggle');
@@ -487,6 +504,9 @@
     // При зареждане на страницата, проверяваме дали има вече кеширани снимки
     window.addEventListener('DOMContentLoaded', () => {
         const cachedOdom = localStorage.getItem('cachedOdomImage');
+
+        // Зареждаме историята от локалната памет
+        history = JSON.parse(localStorage.getItem('fuelHistory')) || [];
         const cachedRece = localStorage.getItem('cachedReceImage');
         if (cachedOdom) {
             odomInput.classList.add('with-thumbnail');
@@ -604,10 +624,100 @@ document.getElementById('fuelForm').addEventListener('submit', async (e) => {
             throw new Error(result.error || `Сървърна грешка (Status ${response.status})`);
         }
 
-        statusBox.className = 'status info';
-        const rawData = result.raw_data || {};
-        const calculatedData = result.data || {};
+        // --- Логика за История ---
+        const newEntry = {
+            raw_data: result.raw_data || {},
+            calculated_data: result.data || {}
+        };
+        history.unshift(newEntry); // Добавяме новия запис в началото
+        if (history.length > 10) {
+            history.pop(); // Премахваме най-стария запис, ако са повече от 10
+        }
+        localStorage.setItem('fuelHistory', JSON.stringify(history));
+        currentHistoryIndex = 0; // Показваме новия запис
 
+        displayHistoryEntry(currentHistoryIndex);
+        
+        document.getElementById('fuelForm').style.display = 'none'; // Скриваме формата
+        document.getElementById('actionButtonsContainer').style.display = 'flex'; // Показваме контейнера с бутоните
+
+    } catch (err) {
+        console.error('❌ [FRONTEND ERROR]:', err);
+        statusBox.className = 'status error';
+        statusBox.innerText = '❌ Грешка: ' + err.message;
+    } finally {
+        submitBtn.disabled = false;
+    }
+});
+
+function displayHistoryEntry(index) {
+    if (!history[index]) return;
+
+    const entry = history[index];
+    const rawData = entry.raw_data;
+    const calculatedData = entry.calculated_data;
+
+    const statusBox = document.getElementById('statusBox');
+    statusBox.className = 'status info';
+
+    // Подготвяме HTML за суровите данни
+    const rawDataHtml = `
+        <div style="text-align: left; margin-bottom: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
+            <b>Разчетени данни:</b><br>
+            Общ километраж: <b>${rawData.odometer_total || 'няма'}</b><br>
+            Дневен километраж: <b>${rawData.odometer_trip || 'няма'}</b><br>
+            Литри: <b>${rawData.liters || 'няма'}</b><br>
+            Цена/литър: <b>${rawData.price_per_liter || 'няма'}</b><br>
+            Отстъпка: <b>${rawData.discount || 'няма'}</b><br>
+            Обща сума: <b>${rawData.total_amount || 'няма'}</b><br>
+            Дата: <b>${rawData.receipt_date || 'няма'}</b><br>
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 8px 0;">
+            Реална цена (след отстъпки): <b>${( (Number(rawData.total_amount) || 0) / (Number(rawData.liters) || 1) ).toFixed(2)} €/литър</b>
+        </div>
+    `;
+    
+    // Изчисляваме стойностите за показване
+    const l_100 = Number(calculatedData.liters_per_100km) || 0;
+    const eur_100 = Number(calculatedData.euro_per_100km) || 0;
+    const centsPerKm = ((Number(calculatedData.euro_per_km) || 0) * 100).toFixed(1);
+
+    let warningMessage = '';
+    if (l_100 > 10) {
+        warningMessage = `<br><span style="color: #c65911; font-weight: bold;">Разходът е по-висок от оптималния!</span>`;
+    }
+
+    // Подготвяме HTML за навигацията в историята
+    const historyNavHtml = `
+        <div class="history-nav">
+            <button id="prevHistoryBtn" ${index === 0 ? 'disabled' : ''}>‹</button>
+            <span id="historyCounter">${index + 1} / ${history.length}</span>
+            <button id="nextHistoryBtn" ${index >= history.length - 1 ? 'disabled' : ''}>›</button>
+        </div>
+    `;
+
+    statusBox.innerHTML = rawDataHtml + `✅ Успешен запис на данните!<br><br>
+        <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} цента/км</b>`
+        + warningMessage + historyNavHtml;
+
+    // Добавяме event listeners към новите бутони
+    document.getElementById('prevHistoryBtn').addEventListener('click', () => {
+        if (currentHistoryIndex > 0) {
+            currentHistoryIndex--;
+            displayHistoryEntry(currentHistoryIndex);
+        }
+    });
+    document.getElementById('nextHistoryBtn').addEventListener('click', () => {
+        if (currentHistoryIndex < history.length - 1) {
+            currentHistoryIndex++;
+            displayHistoryEntry(currentHistoryIndex);
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
         // Подготвяме HTML за суровите данни
         const rawDataHtml = `
             <div style="text-align: left; margin-bottom: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
