@@ -5,7 +5,6 @@ const path = require('path');
 // 1. Динамично зареждане на конфигурацията за автомобили от vehicles.js
 let VEHICLES_CONFIG = [];
 try {
-    // Папката е netlify/functions/, така че отиваме 2 нива нагоре за коренната папка
     const configPath = path.resolve(__dirname, '../../vehicles.js');
     VEHICLES_CONFIG = require(configPath).VEHICLES_CONFIG || [];
 } catch (err) {
@@ -30,50 +29,55 @@ exports.handler = async (event, context) => {
                 body: JSON.stringify({ error: 'Грешна парола за достъп!' })
             };
         }
-        const rawKey = process.env.GEMINI_API_KEY || '';
-        const apiKey = rawKey.trim().replace(/^["']|["']$/g, '');
-        if (!apiKey) {
-            throw new Error('Липсва GEMINI_API_KEY в environment променливите!');
-        }
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
-        const parts = [];
-        parts.push({
-            text: `Ти си експерт по автоматизирано извличане на данни от изображения. Получаваш две снимки: едната е на табло на автомобил (километраж), а другата е касова бележка за гориво.
-            Твоята задача е да ги анализираш, независимо от реда им, и да извлечеш следните данни в СТРИКТЕН JSON формат (без markdown):
-            {
-              "odometer_total": (От снимката на таблото: ОБЩИЯТ пробег. Цяло число или null),
-              "odometer_trip": (От снимката на таблото: ДНЕВНИЯТ пробег 'Trip'. Десетично число или null),
-              "liters": (От касовата бележка: Количеството заредено ГОРИВО в литри. Десетично число или null),
-              "price_per_liter": (От касовата бележка: Извлечи ТОЧНАТА отпечатана числова стойност за 1 литър гориво. Взимай точните отпечатани числа БЕЗ да ги превалутираш и БЕЗ да ги делиш на 1.95583. Десетично число или null),
-              "discount": (От касовата бележка: Извлечи ТОЧНАТА отпечатана числова стойност за отстъпка. Взимай точните отпечатани числа БЕЗ да ги превалутираш и БЕЗ да ги делиш на 1.95583. Положително число или 0),
-              "total_amount": (От касовата бележка: Крайна платена сума. Извлечи ТОЧНАТА отпечатана числова стойност БЕЗ да я превалутираш и БЕЗ да я делиш на 1.95583. Десетично число или null),
-              "receipt_date": (От касовата бележка: Дата и час във формат "YYYY-MM-DD HH:mm". Стринг или null)
+        let parsedData;
+        if (body.isManual && body.manualData) {
+            parsedData = body.manualData;
+        } else {
+            const rawKey = process.env.GEMINI_API_KEY || '';
+            const apiKey = rawKey.trim().replace(/^["']|["']$/g, '');
+            if (!apiKey) {
+                throw new Error('Липсва GEMINI_API_KEY в environment променливите!');
             }
-            КРИТИЧНО ПРАВИЛО: Вземай ТОЧНО числовите стойности, отпечатани на бележката (напр. ако е отпечатано 0.63, върни 0.63; ако е отпечатано 1.87, върни 1.87). НИКОГА не делай стойностите на 1.95583 и НИКОГА не прави самоинициативни превалутирания между BGN и EUR!`
-        });
-        if (body.odometerImage && body.odometerImage.base64Data) {
-            parts.push({ inlineData: { mimeType: body.odometerImage.mimeType, data: body.odometerImage.base64Data } });
-        }
-        if (body.receiptImage && body.receiptImage.base64Data) {
-            parts.push({ inlineData: { mimeType: body.receiptImage.mimeType, data: body.receiptImage.base64Data } });
-        }
-        const geminiResponse = await fetch(geminiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts }],
-                generationConfig: {
-                    responseMimeType: "application/json"
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
+            const parts = [];
+            parts.push({
+                text: `Ти си експерт по автоматизирано извличане на данни от изображения. Получаваш две снимки: едната е на табло на автомобил (километраж), а другата е касова бележка за гориво.
+                Твоята задача е да ги анализираш, независимо от реда им, и да извлечеш следните данни в СТРИКТЕН JSON формат (без markdown):
+                {
+                  "odometer_total": (От снимката на таблото: ОБЩИЯТ пробег. Цяло число или null),
+                  "odometer_trip": (От снимката на таблото: ДНЕВНИЯТ пробег 'Trip'. Десетично число или null),
+                  "liters": (От касовата бележка: Количеството заредено ГОРИВО в литри. Десетично число или null),
+                  "price_per_liter": (От касовата бележка: Извлечи ТОЧНАТА отпечатана числова стойност за 1 литър гориво. Взимай точните отпечатани числа БЕЗ да ги превалутираш и БЕЗ да ги делиш на 1.95583. Десетично число или null),
+                  "discount": (От касовата бележка: Извлечи ТОЧНАТА отпечатана числова стойност за отстъпка. Взимай точните отпечатани числа БЕЗ да ги превалутираш и БЕЗ да ги делиш на 1.95583. Положително число или 0),
+                  "total_amount": (От касовата бележка: Крайна платена сума. Извлечи ТОЧНАТА отпечатана числова стойност БЕЗ да я превалутираш и БЕЗ да я делиш на 1.95583. Десетично число или null),
+                  "receipt_date": (От касовата бележка: Дата и час във формат "YYYY-MM-DD HH:mm". Стринг или null)
                 }
-            })
-        });
-        const geminiData = await geminiResponse.json();
-        if (!geminiResponse.ok) {
-            throw new Error(`Gemini API върна грешка (${geminiResponse.status}): ${JSON.stringify(geminiData)}`);
+                КРИТИЧНО ПРАВИЛО: Вземай ТОЧНО числовите стойности, отпечатани на бележката (напр. ако е отпечатано 0.63, върни 0.63; ако е отпечатано 1.87, върни 1.87). НИКОГА не делай стойностите на 1.95583 и НИКОГА не прави самоинициативни превалутирания между BGN и EUR!`
+            });
+            if (body.odometerImage && body.odometerImage.base64Data) {
+                parts.push({ inlineData: { mimeType: body.odometerImage.mimeType, data: body.odometerImage.base64Data } });
+            }
+            if (body.receiptImage && body.receiptImage.base64Data) {
+                parts.push({ inlineData: { mimeType: body.receiptImage.mimeType, data: body.receiptImage.base64Data } });
+            }
+            const geminiResponse = await fetch(geminiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts }],
+                    generationConfig: {
+                        responseMimeType: "application/json"
+                    }
+                })
+            });
+            const geminiData = await geminiResponse.json();
+            if (!geminiResponse.ok) {
+                throw new Error(`Gemini API върна грешка (${geminiResponse.status}): ${JSON.stringify(geminiData)}`);
+            }
+            const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+            const cleanJsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            parsedData = JSON.parse(cleanJsonText);
         }
-        const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-        const cleanJsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-        const parsedData = JSON.parse(cleanJsonText);
         const selectedVehicleId = body.vehicle;
         const vehicleInfo = VEHICLES_CONFIG.find(v => v.id === selectedVehicleId) || {
             name: selectedVehicleId || "Автомобил",

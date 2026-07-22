@@ -37,7 +37,7 @@
         h1 { font-size: 20px; text-align: center; margin-top: 0; color: var(--heading-color); }
         .form-group { margin-bottom: 18px; }
         label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-        input[type="text"], input[type="password"], select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); }
+        input[type="text"], input[type="password"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; box-sizing: border-box; background-color: var(--input-bg); color: var(--text-color); }
         input[type="file"] { width: 100%; padding: 10px; border: 2px dashed var(--input-border-dashed); border-radius: 8px; background: var(--input-bg); box-sizing: border-box; font-size: 14px; color: var(--text-color); }
         button { width: 100%; padding: 14px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         button:disabled { background: #6c757d; cursor: not-allowed; }
@@ -184,6 +184,15 @@
             background-color: var(--border-color);
         }
         #historyCounter { font-size: 14px; color: var(--text-color); }
+        .manual-inputs-grid {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .manual-inputs-grid input {
+            padding: 8px;
+            font-size: 13px;
+        }
     </style>
     <script src="vehicles.js"></script>
 </head>
@@ -196,7 +205,7 @@
             <span class="toggle-switch"></span>
         </label>
     </div>
-    <h1>⛽ Нов запис за гориво</h1>
+    <h1 id="mainTitle">⛽ Нов запис за гориво</h1>
     
     <form id="fuelForm">
         <div class="form-group">
@@ -220,6 +229,16 @@
                 <input type="file" id="odometer" accept="image/*" capture="environment">
                 <button type="button" id="deleteOdomBtn" class="delete-btn" title="Изчисти снимката">🗑️</button>
             </div>
+            <div class="manual-inputs-grid">
+                <div style="flex: 1;">
+                    <label for="manualOdoTotal" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Общ км (ръчно):</label>
+                    <input type="text" id="manualOdoTotal" placeholder="напр. 400 или 101400" inputmode="numeric">
+                </div>
+                <div style="flex: 1;">
+                    <label for="manualOdoTrip" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Дневен км (ръчно):</label>
+                    <input type="number" id="manualOdoTrip" placeholder="напр. 450.5" step="0.1">
+                </div>
+            </div>
         </div>
 
         <div class="form-group">
@@ -228,6 +247,20 @@
                 <span id="receiptStatus" class="upload-status"></span>
                 <input type="file" id="receipt" accept="image/*" capture="environment">
                 <button type="button" id="deleteReceBtn" class="delete-btn" title="Изчисти снимката">🗑️</button>
+            </div>
+            <div class="manual-inputs-grid">
+                <div style="flex: 1;">
+                    <label for="manualTotalAmount" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Обща сума (€):</label>
+                    <input type="number" id="manualTotalAmount" placeholder="37.50" step="0.01">
+                </div>
+                <div style="flex: 1;">
+                    <label for="manualDiscount" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Отстъпка (€):</label>
+                    <input type="number" id="manualDiscount" placeholder="1.50" step="0.01">
+                </div>
+                <div style="flex: 1;">
+                    <label for="manualLiters" style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Литри:</label>
+                    <input type="number" id="manualLiters" placeholder="60.00" step="0.01">
+                </div>
             </div>
         </div>
 
@@ -310,6 +343,7 @@
     const viewHistoryBtn = document.getElementById('viewHistoryBtn');
 
     function showForm() {
+        document.getElementById('mainTitle').innerText = '⛽ Нов запис за гориво';
         document.getElementById('fuelForm').style.display = 'block';
         document.getElementById('statusBox').className = 'status';
         document.getElementById('actionButtonsContainer').style.display = 'none';
@@ -324,6 +358,69 @@
         } else {
             viewHistoryBtn.style.display = 'none';
         }
+    }
+
+    function clearOdomImage() {
+        localStorage.removeItem('cachedOdomImage');
+        document.getElementById('odomStatus').innerHTML = '';
+        document.getElementById('odomStatus').style.width = '0';
+        odomInput.classList.remove('with-thumbnail');
+        odomInput.value = '';
+    }
+
+    function handleOdoManualInput() {
+        const tot = document.getElementById('manualOdoTotal').value.trim();
+        const trp = document.getElementById('manualOdoTrip').value.trim();
+        if (tot !== '' || trp !== '') {
+            clearOdomImage();
+        }
+    }
+    document.getElementById('manualOdoTotal').addEventListener('input', handleOdoManualInput);
+    document.getElementById('manualOdoTrip').addEventListener('input', handleOdoManualInput);
+
+    function clearReceImage() {
+        localStorage.removeItem('cachedReceImage');
+        document.getElementById('receiptStatus').innerHTML = '';
+        document.getElementById('receiptStatus').style.width = '0';
+        receInput.classList.remove('with-thumbnail');
+        receInput.value = '';
+    }
+
+    function handleReceManualInput() {
+        const tot = document.getElementById('manualTotalAmount').value.trim();
+        const lit = document.getElementById('manualLiters').value.trim();
+        if (tot !== '' && lit !== '') {
+            clearReceImage();
+        }
+    }
+    document.getElementById('manualTotalAmount').addEventListener('input', handleReceManualInput);
+    document.getElementById('manualDiscount').addEventListener('input', handleReceManualInput);
+    document.getElementById('manualLiters').addEventListener('input', handleReceManualInput);
+
+    function parseAndComputeOdometerTotal(inputValue) {
+        const str = inputValue.trim();
+        if (!str) return null;
+        const num = Number(str);
+        if (isNaN(num)) return null;
+        if (str.length <= 3 && num >= 0 && num <= 999) {
+            let prevTotal = null;
+            for (let entry of history) {
+                if (entry.raw_data && entry.raw_data.odometer_total) {
+                    prevTotal = Number(entry.raw_data.odometer_total);
+                    break;
+                }
+            }
+            if (prevTotal !== null && !isNaN(prevTotal)) {
+                let prefix = Math.floor(prevTotal / 1000);
+                let candidate = prefix * 1000 + num;
+                if (candidate < prevTotal) {
+                    prefix += 1;
+                    candidate = prefix * 1000 + num;
+                }
+                return candidate;
+            }
+        }
+        return num;
     }
 
     closeBtn.addEventListener('click', () => showForm());
@@ -447,21 +544,8 @@
     const deleteOdomBtn = document.getElementById('deleteOdomBtn');
     const deleteReceBtn = document.getElementById('deleteReceBtn');
 
-    deleteOdomBtn.addEventListener('click', () => {
-        localStorage.removeItem('cachedOdomImage');
-        document.getElementById('odomStatus').innerHTML = '';
-        document.getElementById('odomStatus').style.width = '0';
-        odomInput.classList.remove('with-thumbnail');
-        odomInput.value = '';
-    });
-
-    deleteReceBtn.addEventListener('click', () => {
-        localStorage.removeItem('cachedReceImage');
-        document.getElementById('receiptStatus').innerHTML = '';
-        document.getElementById('receiptStatus').style.width = '0';
-        receInput.classList.remove('with-thumbnail');
-        receInput.value = '';
-    });
+    deleteOdomBtn.addEventListener('click', () => clearOdomImage());
+    deleteReceBtn.addEventListener('click', () => clearReceImage());
 
     async function handleFileChange(event) {
         const input = event.target;
@@ -551,31 +635,58 @@
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
         statusBox.className = 'status info';
-        statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
+        statusBox.innerText = '⏳ Обработка на данните...';
         try {
-            let odomCompressed = null;
-            let receCompressed = null;
-            const cachedOdom = localStorage.getItem('cachedOdomImage');
-            const cachedRece = localStorage.getItem('cachedReceImage');
-            if (odomInput.files.length > 0) {
-                odomCompressed = await compressImage(odomInput.files[0]);
-            } else if (cachedOdom) {
-                odomCompressed = JSON.parse(cachedOdom);
+            const manualTotAmt = document.getElementById('manualTotalAmount').value.trim();
+            const manualLit = document.getElementById('manualLiters').value.trim();
+            const manualOdoTotStr = document.getElementById('manualOdoTotal').value.trim();
+            const manualOdoTripStr = document.getElementById('manualOdoTrip').value.trim();
+            const isFullManual = (manualTotAmt !== '' && manualLit !== '') && (manualOdoTotStr !== '' || manualOdoTripStr !== '');
+            let payload = {};
+            if (isFullManual) {
+                const computedOdoTotal = parseAndComputeOdometerTotal(manualOdoTotStr);
+                const pricePerLit = (Number(manualTotAmt) / Number(manualLit)).toFixed(2);
+                const manualDisc = document.getElementById('manualDiscount').value.trim();
+                const manualData = {
+                    odometer_total: computedOdoTotal,
+                    odometer_trip: manualOdoTripStr !== '' ? Number(manualOdoTripStr) : null,
+                    liters: Number(manualLit),
+                    price_per_liter: Number(pricePerLit),
+                    discount: manualDisc !== '' ? Number(manualDisc) : 0,
+                    total_amount: Number(manualTotAmt),
+                    receipt_date: new Date().toISOString().slice(0, 16).replace('T', ' ')
+                };
+                payload = {
+                    password: document.getElementById('password').value,
+                    vehicle: document.getElementById('vehicle').value,
+                    isManual: true,
+                    manualData: manualData
+                };
+            } else {
+                let odomCompressed = null;
+                let receCompressed = null;
+                const cachedOdom = localStorage.getItem('cachedOdomImage');
+                const cachedRece = localStorage.getItem('cachedReceImage');
+                if (odomInput.files.length > 0) {
+                    odomCompressed = await compressImage(odomInput.files[0]);
+                } else if (cachedOdom) {
+                    odomCompressed = JSON.parse(cachedOdom);
+                }
+                if (receInput.files.length > 0) {
+                    receCompressed = await compressImage(receInput.files[0]);
+                } else if (cachedRece) {
+                    receCompressed = JSON.parse(cachedRece);
+                }
+                if (!odomCompressed || !receCompressed) {
+                    throw new Error('Моля, качете и двете снимки или попълнете ръчните стойности.');
+                }
+                payload = {
+                    password: document.getElementById('password').value,
+                    vehicle: document.getElementById('vehicle').value,
+                    odometerImage: odomCompressed,
+                    receiptImage: receCompressed
+                };
             }
-            if (receInput.files.length > 0) {
-                receCompressed = await compressImage(receInput.files[0]);
-            } else if (cachedRece) {
-                receCompressed = JSON.parse(cachedRece);
-            }
-            if (!odomCompressed || !receCompressed) {
-                throw new Error('Моля, изберете и двете снимки.');
-            }
-            const payload = {
-                password: document.getElementById('password').value,
-                vehicle: document.getElementById('vehicle').value,
-                odometerImage: odomCompressed,
-                receiptImage: receCompressed
-            };
             const response = await fetch('/.netlify/functions/process-fuel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -583,7 +694,7 @@
             });
             const rawText = await response.text();
             if (!rawText) {
-                throw new Error(`Сървърът върна напълно празен отговор (Status: ${response.status})`);
+                throw new Error(`Сървърът върна празен отговор (Status: ${response.status})`);
             }
             let result;
             try {
@@ -620,11 +731,22 @@
     function displayHistoryEntry(index) {
         if (!history || history.length === 0 || !history[index]) return;
         currentHistoryIndex = index;
+        document.getElementById('mainTitle').innerText = '📜 История';
         const entry = history[index];
         const rawData = entry.raw_data || {};
         const calculatedData = entry.calculated_data || {};
         const statusBox = document.getElementById('statusBox');
         statusBox.className = 'status info';
+        let tripWarningMessage = '';
+        if (rawData.odometer_trip && history[index + 1] && history[index + 1].raw_data && history[index + 1].raw_data.odometer_total && rawData.odometer_total) {
+            const currentTot = Number(rawData.odometer_total);
+            const prevTot = Number(history[index + 1].raw_data.odometer_total);
+            const calcDist = currentTot - prevTot;
+            const tripDist = Number(rawData.odometer_trip);
+            if (calcDist > 0 && Math.abs(tripDist - calcDist) > 10) {
+                tripWarningMessage = `<br><span style="color: #0056b3; font-weight: bold;">ℹ️ Изчисленият пробег (${calcDist.toFixed(1)} км) се различава от дневния километраж (${tripDist.toFixed(1)} км).</span>`;
+            }
+        }
         const rawDataHtml = `
             <div style="text-align: left; margin-bottom: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
                 <b>Разчетени данни:</b><br>
@@ -655,7 +777,7 @@
         `;
         statusBox.innerHTML = rawDataHtml + `✅ Успешен запис на данните!<br><br>
             <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} цента/км</b>`
-            + warningMessage + historyNavHtml;
+            + warningMessage + tripWarningMessage + historyNavHtml;
         document.getElementById('prevHistoryBtn').addEventListener('click', () => {
             if (history.length > 1) {
                 currentHistoryIndex = (currentHistoryIndex > 0) ? currentHistoryIndex - 1 : history.length - 1;
