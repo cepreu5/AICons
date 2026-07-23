@@ -944,7 +944,24 @@
             updatePinUI();
             const autoAction = localStorage.getItem('pinnedAutoTrigger');
             if (autoAction) {
-                setTimeout(() => { triggerPinnedAction(autoAction); }, 300);
+                let triggered = false;
+                const tryTrigger = () => {
+                    if (!triggered) {
+                        triggered = true;
+                        triggerPinnedAction(autoAction);
+                    }
+                };
+                try {
+                    triggerPinnedAction(autoAction);
+                } catch (e) {}
+                const userGestureHandler = () => {
+                    tryTrigger();
+                    window.removeEventListener('click', userGestureHandler);
+                    window.removeEventListener('touchstart', userGestureHandler);
+                };
+                window.addEventListener('click', userGestureHandler, { once: true });
+                window.addEventListener('touchstart', userGestureHandler, { once: true });
+                setTimeout(tryTrigger, 300);
             }
         });
 
