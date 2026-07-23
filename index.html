@@ -463,12 +463,12 @@
                 <div class="manual-inputs-grid">
                     <div style="flex: 1;">
                         <label for="manualOdoTotal"
-                            style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Общ км:</label>
+                            style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Общ:</label>
                         <input type="text" id="manualOdoTotal" placeholder="напр. 400 или 101400" inputmode="numeric">
                     </div>
                     <div style="flex: 1;">
                         <label for="manualOdoTrip"
-                            style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Дневен км:</label>
+                            style="font-weight: normal; font-size: 12px; margin-bottom: 2px;">Дневен:</label>
                         <input type="number" id="manualOdoTrip" placeholder="" step="0.1">
                     </div>
                 </div>
@@ -1000,6 +1000,7 @@
                     discount: manualDiscStr !== '' ? Number(manualDiscStr) : 0,
                     receipt_date: new Date().toISOString().slice(0, 16).replace('T', ' ')
                 };
+                const selectedVehicle = document.getElementById('vehicle').value;
                 if (isFullManual) {
                     let distance = 0;
                     if (manualData.odometer_trip && manualData.odometer_trip > 0) {
@@ -1017,6 +1018,7 @@
                         distance: distance > 0 ? distance.toFixed(1) + ' км' : null
                     };
                     const newEntry = {
+                        vehicle: selectedVehicle,
                         raw_data: manualData,
                         calculated_data: calculatedData
                     };
@@ -1034,7 +1036,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             password: document.getElementById('password').value,
-                            vehicle: document.getElementById('vehicle').value,
+                            vehicle: selectedVehicle,
                             isManual: true,
                             manualData: manualData,
                             calculatedData: calculatedData,
@@ -1061,7 +1063,7 @@
                 }
                 const payload = {
                     password: document.getElementById('password').value,
-                    vehicle: document.getElementById('vehicle').value,
+                    vehicle: selectedVehicle,
                     odometerImage: odomCompressed,
                     receiptImage: receCompressed,
                     manualData: manualData,
@@ -1086,6 +1088,7 @@
                     throw new Error(result.error || `Сървърна грешка (Status ${response.status})`);
                 }
                 const newEntry = {
+                    vehicle: selectedVehicle,
                     raw_data: result.raw_data || {},
                     calculated_data: result.data || {}
                 };
@@ -1107,6 +1110,15 @@
             }
         });
 
+        function getVehicleUnitSymbol(vehicleId) {
+            const selectedId = vehicleId || (document.getElementById('vehicle') ? document.getElementById('vehicle').value : '');
+            if (typeof VEHICLES_CONFIG !== 'undefined') {
+                const v = VEHICLES_CONFIG.find(item => item.id === selectedId);
+                if (v && v.unit === 'MILES') return 'mi';
+            }
+            return 'км';
+        }
+
         function displayHistoryEntry(index) {
             if (!history || history.length === 0 || !history[index]) return;
             currentHistoryIndex = index;
@@ -1114,6 +1126,7 @@
             const entry = history[index];
             const rawData = entry.raw_data || {};
             const calculatedData = entry.calculated_data || {};
+            const distUnit = getVehicleUnitSymbol(entry.vehicle);
             const statusBox = document.getElementById('statusBox');
             statusBox.className = 'status info';
             let tripWarningMessage = '';
@@ -1123,7 +1136,7 @@
                 const calcDist = currentTot - prevTot;
                 const tripDist = Number(rawData.odometer_trip);
                 if (calcDist > 0 && Math.abs(tripDist - calcDist) > 10) {
-                    tripWarningMessage = `<br><span style="color: #0056b3; font-weight: bold;">ℹ️ Изчисленият пробег (${calcDist.toFixed(1)} км) се различава от дневния километраж (${tripDist.toFixed(1)} км).</span>`;
+                    tripWarningMessage = `<br><span style="color: #0056b3; font-weight: bold;">ℹ️ Изчисленият пробег (${calcDist.toFixed(1)} ${distUnit}) се различава от дневния километраж (${tripDist.toFixed(1)} ${distUnit}).</span>`;
                 }
             }
             let discrepancyMessage = '';
@@ -1148,15 +1161,22 @@
                     }
                 }
             }
+            const odomTotalVal = rawData.odometer_total ? `${rawData.odometer_total} ${distUnit}` : 'няма';
+            const odomTripVal = rawData.odometer_trip ? `${rawData.odometer_trip} ${distUnit}` : 'няма';
+            const litersVal = rawData.liters ? `${rawData.liters} л` : 'няма';
+            const pricePerLiterVal = rawData.price_per_liter ? `${rawData.price_per_liter} €/л` : 'няма';
+            const discountValFormatted = (discountVal !== 'няма') ? `${discountVal} €` : 'няма';
+            const totalAmountVal = rawData.total_amount ? `${rawData.total_amount} €` : 'няма';
             const rawDataHtml = `
             <div style="text-align: left; margin-bottom: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
                 <b>Разчетени данни:</b><br>
-                Общ километраж: <b>${rawData.odometer_total || 'няма'}</b><br>
-                Дневен километраж: <b>${rawData.odometer_trip || 'няма'}</b><br>
-                Литри: <b>${rawData.liters || 'няма'}</b><br>
-                Цена/литър: <b>${rawData.price_per_liter || 'няма'}</b><br>
-                Отстъпка: <b>${discountVal}</b><br>
-                Обща сума: <b>${rawData.total_amount || 'няма'}</b><br>
+                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 8px 0;">
+                Общ километраж: <b>${odomTotalVal}</b><br>
+                Дневен километраж: <b>${odomTripVal}</b><br>
+                Литри: <b>${litersVal}</b><br>
+                Цена/литър: <b>${pricePerLiterVal}</b><br>
+                Отстъпка: <b>${discountValFormatted}</b><br>
+                Обща сума: <b>${totalAmountVal}</b><br>
                 Дата: <b>${rawData.receipt_date || 'няма'}</b><br>
                 <hr style="border: none; border-top: 1px solid var(--border-color); margin: 8px 0;">
                 Реална цена (след отстъпки): <b>${((Number(rawData.total_amount) || 0) / (Number(rawData.liters) || 1)).toFixed(2)} €/л</b>
@@ -1165,8 +1185,9 @@
             const l_100 = Number(calculatedData.liters_per_100km) || 0;
             const eur_100 = Number(calculatedData.euro_per_100km) || 0;
             const centsPerKm = ((Number(calculatedData.euro_per_km) || 0) * 100).toFixed(1);
-            const distText = calculatedData.distance || (rawData.odometer_trip ? (Number(rawData.odometer_trip).toFixed(1) + ' км') : 'няма данни');
-            const tripBadge = rawData.odometer_trip ? ` (дневен км: ${Number(rawData.odometer_trip).toFixed(1)} км)` : '';
+            let rawDistStr = calculatedData.distance ? String(calculatedData.distance).replace(/\s*(км|mi)/g, '') : null;
+            const distText = rawDistStr ? (rawDistStr + ' ' + distUnit) : (rawData.odometer_trip ? (Number(rawData.odometer_trip).toFixed(1) + ' ' + distUnit) : 'няма данни');
+            const tripBadge = rawData.odometer_trip ? ` (дневен: ${Number(rawData.odometer_trip).toFixed(1)} ${distUnit})` : '';
             const distanceHtml = `<br><span style="color: var(--text-color);">Изчисленията са на база пробег: <b>${distText}</b>${tripBadge}</span>`;
             let warningMessage = '';
             if (l_100 > 10) {
@@ -1179,8 +1200,7 @@
                 <button type="button" id="nextHistoryBtn" ${history.length <= 1 ? 'disabled' : ''}>›</button>
             </div>
         `;
-            const sectionDivider = `<hr style="border: none; border-top: 1px solid var(--border-color); margin: 12px 0;">`;
-            statusBox.innerHTML = rawDataHtml + sectionDivider + `✅ Успешен запис на данните!<br><br>
+            statusBox.innerHTML = rawDataHtml + `✅ Успешен запис на данните!<br><br>
             <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} ц/км</b>`
                 + distanceHtml + warningMessage + tripWarningMessage + discrepancyMessage + historyNavHtml;
             document.getElementById('prevHistoryBtn').addEventListener('click', () => {
