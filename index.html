@@ -1167,6 +1167,24 @@
             if (entry.discrepancyNotice) {
                 discrepancyMessage = `<br><span style="color: #0056b3; font-weight: bold;">${entry.discrepancyNotice}</span>`;
             }
+            let discountVal = 'няма';
+            if (rawData.discount !== null && rawData.discount !== undefined && rawData.discount !== '') {
+                const dNum = Number(rawData.discount);
+                if (!isNaN(dNum) && dNum > 0) {
+                    discountVal = dNum.toFixed(2);
+                }
+            }
+            if (discountVal === 'няма') {
+                const pLit = Number(rawData.price_per_liter);
+                const tot = Number(rawData.total_amount);
+                const lit = Number(rawData.liters);
+                if (pLit > 0 && tot > 0 && lit > 0) {
+                    const diff = (pLit * lit) - tot;
+                    if (diff > 0.005) {
+                        discountVal = diff.toFixed(2);
+                    }
+                }
+            }
             const rawDataHtml = `
             <div style="text-align: left; margin-bottom: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
                 <b>Разчетени данни:</b><br>
@@ -1174,7 +1192,7 @@
                 Дневен километраж: <b>${rawData.odometer_trip || 'няма'}</b><br>
                 Литри: <b>${rawData.liters || 'няма'}</b><br>
                 Цена/литър: <b>${rawData.price_per_liter || 'няма'}</b><br>
-                Отстъпка: <b>${rawData.discount || 'няма'}</b><br>
+                Отстъпка: <b>${discountVal}</b><br>
                 Обща сума: <b>${rawData.total_amount || 'няма'}</b><br>
                 Дата: <b>${rawData.receipt_date || 'няма'}</b><br>
                 <hr style="border: none; border-top: 1px solid var(--border-color); margin: 8px 0;">
@@ -1189,7 +1207,7 @@
             const distanceHtml = `<br><span style="color: var(--text-color);">Изчисленията са на база пробег: <b>${distText}</b>${tripBadge}</span>`;
             let warningMessage = '';
             if (l_100 > 10) {
-                warningMessage = `<br><span style="color: #c65911; font-weight: bold;">Разходът е по-висок от оптималния!</span>`;
+                warningMessage = `<hr style="border: none; border-top: 1px solid var(--border-color); margin: 12px 0;"><span style="color: #c65911; font-weight: bold;">⚠️ Разходът е по-висок от оптималния!</span>`;
             }
             const historyNavHtml = `
             <div class="history-nav">
@@ -1198,7 +1216,8 @@
                 <button type="button" id="nextHistoryBtn" ${history.length <= 1 ? 'disabled' : ''}>›</button>
             </div>
         `;
-            statusBox.innerHTML = rawDataHtml + `✅ Успешен запис на данните!<br><br>
+            const sectionDivider = `<hr style="border: none; border-top: 1px solid var(--border-color); margin: 12px 0;">`;
+            statusBox.innerHTML = rawDataHtml + sectionDivider + `✅ Успешен запис на данните!<br><br>
             <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} ц/км</b>`
                 + distanceHtml + warningMessage + tripWarningMessage + discrepancyMessage + historyNavHtml;
             document.getElementById('prevHistoryBtn').addEventListener('click', () => {

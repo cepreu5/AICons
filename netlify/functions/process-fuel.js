@@ -59,11 +59,13 @@ exports.handler = async (event, context) => {
                   "odometer_trip": (От снимката на таблото: ДНЕВНИЯТ пробег 'Trip'. Десетично число или null),
                   "liters": (От касовата бележка: Количеството заредено ГОРИВО в литри. Десетично число или null),
                   "price_per_liter": (От касовата бележка: Извлечи ТОЧНАТА отпечатана числова стойност за 1 литър гориво. Взимай точните отпечатани числа БЕЗ да ги превалутираш и БЕЗ да ги делиш на 1.95583. Десетично число или null),
-                  "discount": (От касовата бележка: Извлечи ТОЧНАТА отпечатана числова стойност за отстъпка. Взимай точните отпечатани числа БЕЗ да ги превалутираш и БЕЗ да ги делиш на 1.95583. Положително число или 0),
+                  "discount": (От касовата бележка: Търси ред 'Отстъпка', 'Отст.' или сума със знак минус напр. '-1.37'. Извлечи размера на отстъпката като ПОЛОЖИТЕЛНО десетично число напр. 1.37, или 0 ако няма),
                   "total_amount": (От касовата бележка: Крайна платена сума. Извлечи ТОЧНАТА отпечатана числова стойност БЕЗ да я превалутираш и БЕЗ да я делиш на 1.95583. Десетично число или null),
                   "receipt_date": (От касовата бележка: Дата и час във формат "YYYY-MM-DD HH:mm". Стринг или null)
                 }
-                КРИТИЧНО ПРАВИЛО: За полета, за които няма предоставена снимка, върни null. Вземай ТОЧНО числовите стойности, отпечатани на бележката (напр. ако е отпечатано 0.63, върни 0.63; ако е отпечатано 1.87, върни 1.87). НИКОГА не делай стойностите на 1.95583 и НИКОГА не прави самоинициативни превалутирания между BGN и EUR!`
+                КРИТИЧНИ ПРАВИЛА:
+                1. Отстъпката на бележките за гориво обикновено е отпечатана с минус отпред (напр. "Отстъпка -1.37" или "-1.37"). ВИНАГИ я откривай и я връщай като ПОЛОЖИТЕЛНО число (напр. 1.37).
+                2. За полета, за които няма предоставена снимка, върни null. Вземай ТОЧНО числовите стойности, отпечатани на бележката. НИКОГА не делай стойностите на 1.95583 и НИКОГА не прави самоинициативни превалутирания между BGN и EUR!`
             });
             if (hasOdomImg) {
                 parts.push({ inlineData: { mimeType: body.odometerImage.mimeType, data: body.odometerImage.base64Data } });
@@ -89,6 +91,9 @@ exports.handler = async (event, context) => {
             const cleanJsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
             const aiData = JSON.parse(cleanJsonText);
             Object.assign(parsedData, aiData);
+            if (parsedData.discount !== null && parsedData.discount !== undefined) {
+                parsedData.discount = Math.abs(Number(parsedData.discount));
+            }
         }
         if (body.manualData) {
             const manual = body.manualData;
@@ -117,6 +122,13 @@ exports.handler = async (event, context) => {
         }
         if (!parsedData.price_per_liter && parsedData.total_amount && parsedData.liters > 0) {
             parsedData.price_per_liter = Number((parsedData.total_amount / parsedData.liters).toFixed(2));
+        }
+        if ((!parsedData.discount || Number(parsedData.discount) === 0) && parsedData.price_per_liter && parsedData.total_amount && parsedData.liters > 0) {
+            const nominal = Number(parsedData.price_per_liter) * Number(parsedData.liters);
+            const diff = nominal - Number(parsedData.total_amount);
+            if (diff > 0.005) {
+                parsedData.discount = Number(diff.toFixed(2));
+            }
         }
         let calculatedData = body.calculatedData || {};
         let distance = 0;
