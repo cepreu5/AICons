@@ -452,9 +452,7 @@
                     <input type="file" id="odometerCam" accept="image/*" capture="environment" style="display:none;">
                     <input type="file" id="odometerFile" accept="image/*" style="display:none;">
                     <button type="button" class="select-btn" onclick="document.getElementById('odometerCam').click()">
-                        📷 Камера <span class="pin-icon" id="pin_odomCam"
-                            onclick="event.stopPropagation(); pinAutoTrigger('odomCam')"
-                            title="Автоматично отваряне при старт">📌</span>
+                        📷 Камера
                     </button>
                     <button type="button" class="select-btn" onclick="document.getElementById('odometerFile').click()">
                         🖼️ Галерия
@@ -483,9 +481,7 @@
                     <input type="file" id="receiptCam" accept="image/*" capture="environment" style="display:none;">
                     <input type="file" id="receiptFile" accept="image/*" style="display:none;">
                     <button type="button" class="select-btn" onclick="document.getElementById('receiptCam').click()">
-                        📷 Камера <span class="pin-icon" id="pin_receCam"
-                            onclick="event.stopPropagation(); pinAutoTrigger('receCam')"
-                            title="Автоматично отваряне при старт">📌</span>
+                        📷 Камера
                     </button>
                     <button type="button" class="select-btn" onclick="document.getElementById('receiptFile').click()">
                         🖼️ Галерия
@@ -578,35 +574,6 @@
                 pinVehicleBtn.style.backgroundColor = 'var(--border-color)';
             }, 1500);
         });
-
-        function updatePinUI() {
-            const activeAction = localStorage.getItem('pinnedAutoTrigger');
-            ['odomCam', 'receCam'].forEach(id => {
-                const el = document.getElementById('pin_' + id);
-                if (el) {
-                    if (id === activeAction) {
-                        el.classList.add('active');
-                    } else {
-                        el.classList.remove('active');
-                    }
-                }
-            });
-        }
-
-        function pinAutoTrigger(actionId) {
-            const current = localStorage.getItem('pinnedAutoTrigger');
-            if (current === actionId) {
-                localStorage.removeItem('pinnedAutoTrigger');
-            } else {
-                localStorage.setItem('pinnedAutoTrigger', actionId);
-            }
-            updatePinUI();
-        }
-
-        function triggerPinnedAction(actionId) {
-            if (actionId === 'odomCam') document.getElementById('odometerCam').click();
-            else if (actionId === 'receCam') document.getElementById('receiptCam').click();
-        }
 
         const statusBox = document.getElementById('statusBox');
 
@@ -941,28 +908,6 @@
                 vehicleSelect.value = defaultVehicleId;
             }
             updateViewHistoryBtn();
-            updatePinUI();
-            const autoAction = localStorage.getItem('pinnedAutoTrigger');
-            if (autoAction) {
-                let triggered = false;
-                const tryTrigger = () => {
-                    if (!triggered) {
-                        triggered = true;
-                        triggerPinnedAction(autoAction);
-                    }
-                };
-                try {
-                    triggerPinnedAction(autoAction);
-                } catch (e) {}
-                const userGestureHandler = () => {
-                    tryTrigger();
-                    window.removeEventListener('click', userGestureHandler);
-                    window.removeEventListener('touchstart', userGestureHandler);
-                };
-                window.addEventListener('click', userGestureHandler, { once: true });
-                window.addEventListener('touchstart', userGestureHandler, { once: true });
-                setTimeout(tryTrigger, 300);
-            }
         });
 
         function compressImage(file, maxDimension = 1920, quality = 0.8) {
@@ -1006,7 +951,9 @@
         document.getElementById('fuelForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerHTML;
             submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Анализ на снимки и изчисляване...';
             try {
                 const manualTotAmt = document.getElementById('manualTotalAmount').value.trim();
                 const manualLit = document.getElementById('manualLiters').value.trim();
@@ -1112,8 +1059,6 @@
                     }).catch(err => console.error('Background sync error:', err));
                     return;
                 }
-                statusBox.className = 'status info';
-                statusBox.innerText = '⏳ Анализ на снимки и изчисляване...';
                 const payload = {
                     password: document.getElementById('password').value,
                     vehicle: document.getElementById('vehicle').value,
@@ -1158,6 +1103,7 @@
                 statusBox.innerText = '❌ Грешка: ' + err.message;
             } finally {
                 submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             }
         });
 
