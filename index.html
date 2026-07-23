@@ -995,71 +995,7 @@
                 const manualLit = document.getElementById('manualLiters').value.trim();
                 const manualOdoTotStr = document.getElementById('manualOdoTotal').value.trim();
                 const manualOdoTripStr = document.getElementById('manualOdoTrip').value.trim();
-                const isFullManual = (manualTotAmt !== '' && manualLit !== '') && (manualOdoTotStr !== '' || manualOdoTripStr !== '');
-                if (isFullManual) {
-                    const computedOdoTotal = parseAndComputeOdometerTotal(manualOdoTotStr);
-                    const pricePerLit = (Number(manualTotAmt) / Number(manualLit)).toFixed(2);
-                    const manualDisc = document.getElementById('manualDiscount').value.trim();
-                    const manualData = {
-                        odometer_total: computedOdoTotal,
-                        odometer_trip: manualOdoTripStr !== '' ? Number(manualOdoTripStr) : null,
-                        liters: Number(manualLit),
-                        price_per_liter: Number(pricePerLit),
-                        discount: manualDisc !== '' ? Number(manualDisc) : 0,
-                        total_amount: Number(manualTotAmt),
-                        receipt_date: new Date().toISOString().slice(0, 16).replace('T', ' ')
-                    };
-                    let distance = 0;
-                    if (manualData.odometer_trip && manualData.odometer_trip > 0) {
-                        distance = manualData.odometer_trip;
-                    } else if (manualData.odometer_total) {
-                        let prevTot = null;
-                        for (let entry of history) {
-                            if (entry.raw_data && entry.raw_data.odometer_total) {
-                                prevTot = Number(entry.raw_data.odometer_total);
-                                break;
-                            }
-                        }
-                        if (prevTot !== null && manualData.odometer_total > prevTot) {
-                            distance = manualData.odometer_total - prevTot;
-                        }
-                    }
-                    const l_100 = distance > 0 ? (manualData.liters / distance) * 100 : 0;
-                    const eur_100 = distance > 0 ? (manualData.total_amount / distance) * 100 : 0;
-                    const eur_km = distance > 0 ? (manualData.total_amount / distance) : 0;
-                    const newEntry = {
-                        raw_data: manualData,
-                        calculated_data: {
-                            liters_per_100km: l_100.toFixed(2),
-                            euro_per_100km: eur_100.toFixed(2),
-                            euro_per_km: eur_km.toFixed(4)
-                        }
-                    };
-                    history.unshift(newEntry);
-                    if (history.length > 10) {
-                        history.pop();
-                    }
-                    localStorage.setItem('fuelHistory', JSON.stringify(history));
-                    currentHistoryIndex = 0;
-                    displayHistoryEntry(currentHistoryIndex);
-                    document.getElementById('fuelForm').style.display = 'none';
-                    document.getElementById('actionButtonsContainer').style.display = 'flex';
-                    updateViewHistoryBtn();
-                    submitBtn.disabled = false;
-                    fetch('/.netlify/functions/process-fuel', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            password: document.getElementById('password').value,
-                            vehicle: document.getElementById('vehicle').value,
-                            isManual: true,
-                            manualData: manualData
-                        })
-                    }).catch(err => console.error('Background sync error:', err));
-                    return;
-                }
-                statusBox.className = 'status info';
-                statusBox.innerText = '⏳ Компресиране на снимките и AI анализ...';
+                const manualDiscStr = document.getElementById('manualDiscount').value.trim();
                 let odomCompressed = null;
                 let receCompressed = null;
                 const odomFile = getSelectedFile(true);
@@ -1076,14 +1012,98 @@
                 } else if (cachedRece) {
                     receCompressed = JSON.parse(cachedRece);
                 }
-                if (!odomCompressed || !receCompressed) {
-                    throw new Error('Моля, качете и двете снимки или попълнете ръчните стойности.');
+                const hasPhotos = !!(odomCompressed || receCompressed);
+                const hasManualOdo = (manualOdoTotStr !== '' || manualOdoTripStr !== '');
+                const hasManualRece = (manualTotAmt !== '' && manualLit !== '');
+                const isFullManual = !hasPhotos && (hasManualOdo && hasManualRece);
+                if (!hasPhotos && !isFullManual) {
+                    throw new Error('Моля, качете поне една снимка или попълнете ръчно данните за километража и бележката.');
                 }
+                let prevOdoTotal = null;
+                for (let entry of history) {
+                    if (entry.raw_data && entry.raw_data.odometer_total) {
+                        prevOdoTotal = Number(entry.raw_data.odometer_total);
+                        break;
+                    }
+                }
+                const computedManualOdoTotal = manualOdoTotStr !== '' ? parseAndComputeOdometerTotal(manualOdoTotStr) : null;
+                const manualData = {
+                    odometer_total: computedManualOdoTotal,
+                    odometer_trip: manualOdoTripStr !== '' ? Number(manualOdoTripStr) : null,
+                    total_amount: manualTotAmt !== '' ? Number(manualTotAmt) : null,
+                    liters: manualLit !== '' ? Number(manualLit) : null,
+                    price_per_liter: (manualTotAmt !== '' && manualLit !== '') ? Number((Number(manualTotAmt) / Number(manualLit)).toFixed(2)) : null,
+                    discount: manualDiscStr !== '' ? Number(manualDiscStr) : 0,
+                    receipt_date: new Date().toISOString().slice(0, 16).replace('T', ' ')
+                };
+                if (isFullManual) {
+                    let distance = 0;
+                    if (manualData.odometer_trip && manualData.odometer_trip > 0) {
+                        distance = manualData.odometer_trip;
+                    } else if (manualData.odometer_total && prevOdoTotal && manualData.odometer_total > prevOdoTotal) {
+                        distance = manualData.odometer_total - prevOdoTotal;
+                    }
+                    const l_100 = distance > 0 ? (manualData.liters / distance) * 100 : 0;
+                    const eur_100 = distance > 0 ? (manualData.total_amount / distance) * 100 : 0;
+                    const eur_km = distance > 0 ? (manualData.total_amount / distance) : 0;
+                    const calculatedData = {
+                        liters_per_100km: l_100.toFixed(2),
+                        euro_per_100km: eur_100.toFixed(2),
+                        euro_per_km: eur_km.toFixed(4),
+                        distance: distance > 0 ? distance.toFixed(1) + ' км' : null
+                    };
+                    const newEntry = {
+                        raw_data: manualData,
+                        calculated_data: calculatedData
+                    };
+                    history.unshift(newEntry);
+                    if (history.length > 10) history.pop();
+                    localStorage.setItem('fuelHistory', JSON.stringify(history));
+                    currentHistoryIndex = 0;
+                    displayHistoryEntry(currentHistoryIndex);
+                    document.getElementById('fuelForm').style.display = 'none';
+                    document.getElementById('actionButtonsContainer').style.display = 'flex';
+                    updateViewHistoryBtn();
+                    submitBtn.disabled = false;
+                    fetch('/.netlify/functions/process-fuel', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            password: document.getElementById('password').value,
+                            vehicle: document.getElementById('vehicle').value,
+                            isManual: true,
+                            manualData: manualData,
+                            calculatedData: calculatedData,
+                            prevOdometerTotal: prevOdoTotal
+                        })
+                    }).then(res => res.json()).then(result => {
+                        if (result && result.data) {
+                            const localDist = calculatedData.distance || '';
+                            const serverDist = result.data.distance || '';
+                            const localL100 = calculatedData.liters_per_100km || '';
+                            const serverL100 = result.data.liters_per_100km || '';
+                            const hasDiscrepancy = (serverDist && localDist && serverDist !== localDist) || (serverL100 && localL100 && serverL100 !== localL100);
+                            history[0].calculated_data = result.data;
+                            if (hasDiscrepancy) {
+                                history[0].discrepancyNotice = `ℹ️ Данните бяха актуализирани спрямо историята в Google Sheets (пробег: ${serverDist}).`;
+                            }
+                            localStorage.setItem('fuelHistory', JSON.stringify(history));
+                            if (currentHistoryIndex === 0) {
+                                displayHistoryEntry(0);
+                            }
+                        }
+                    }).catch(err => console.error('Background sync error:', err));
+                    return;
+                }
+                statusBox.className = 'status info';
+                statusBox.innerText = '⏳ Анализ на снимки и изчисляване...';
                 const payload = {
                     password: document.getElementById('password').value,
                     vehicle: document.getElementById('vehicle').value,
                     odometerImage: odomCompressed,
-                    receiptImage: receCompressed
+                    receiptImage: receCompressed,
+                    manualData: manualData,
+                    prevOdometerTotal: prevOdoTotal
                 };
                 const response = await fetch('/.netlify/functions/process-fuel', {
                     method: 'POST',
@@ -1108,9 +1128,7 @@
                     calculated_data: result.data || {}
                 };
                 history.unshift(newEntry);
-                if (history.length > 10) {
-                    history.pop();
-                }
+                if (history.length > 10) history.pop();
                 localStorage.setItem('fuelHistory', JSON.stringify(history));
                 currentHistoryIndex = 0;
                 displayHistoryEntry(currentHistoryIndex);
@@ -1145,6 +1163,10 @@
                     tripWarningMessage = `<br><span style="color: #0056b3; font-weight: bold;">ℹ️ Изчисленият пробег (${calcDist.toFixed(1)} км) се различава от дневния километраж (${tripDist.toFixed(1)} км).</span>`;
                 }
             }
+            let discrepancyMessage = '';
+            if (entry.discrepancyNotice) {
+                discrepancyMessage = `<br><span style="color: #0056b3; font-weight: bold;">${entry.discrepancyNotice}</span>`;
+            }
             const rawDataHtml = `
             <div style="text-align: left; margin-bottom: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
                 <b>Разчетени данни:</b><br>
@@ -1162,6 +1184,9 @@
             const l_100 = Number(calculatedData.liters_per_100km) || 0;
             const eur_100 = Number(calculatedData.euro_per_100km) || 0;
             const centsPerKm = ((Number(calculatedData.euro_per_km) || 0) * 100).toFixed(1);
+            const distText = calculatedData.distance || (rawData.odometer_trip ? (Number(rawData.odometer_trip).toFixed(1) + ' км') : 'няма данни');
+            const tripBadge = rawData.odometer_trip ? ` (дневен км: ${Number(rawData.odometer_trip).toFixed(1)} км)` : '';
+            const distanceHtml = `<br><span style="color: var(--text-color);">Изчисленията са на база пробег: <b>${distText}</b>${tripBadge}</span>`;
             let warningMessage = '';
             if (l_100 > 10) {
                 warningMessage = `<br><span style="color: #c65911; font-weight: bold;">Разходът е по-висок от оптималния!</span>`;
@@ -1175,7 +1200,7 @@
         `;
             statusBox.innerHTML = rawDataHtml + `✅ Успешен запис на данните!<br><br>
             <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} ц/км</b>`
-                + warningMessage + tripWarningMessage + historyNavHtml;
+                + distanceHtml + warningMessage + tripWarningMessage + discrepancyMessage + historyNavHtml;
             document.getElementById('prevHistoryBtn').addEventListener('click', () => {
                 if (history.length > 1) {
                     currentHistoryIndex = (currentHistoryIndex > 0) ? currentHistoryIndex - 1 : history.length - 1;
