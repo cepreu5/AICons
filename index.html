@@ -22,7 +22,7 @@
         }
 
         [data-theme="dark"] {
-            --bg-color: #121212;
+            --bg-color: #493f3f;
             --container-bg: #1e1e1e;
             --text-color: #e0e0e0;
             --heading-color: #ffffff;
@@ -113,6 +113,12 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+        }
+
+        #submitBtn {
+            padding: 14px 4px;
+            white-space: nowrap;
+            font-size: 15px;
         }
 
         button:disabled {
@@ -1185,10 +1191,11 @@
             const l_100 = Number(calculatedData.liters_per_100km) || 0;
             const eur_100 = Number(calculatedData.euro_per_100km) || 0;
             const centsPerKm = ((Number(calculatedData.euro_per_km) || 0) * 100).toFixed(1);
-            let rawDistStr = calculatedData.distance ? String(calculatedData.distance).replace(/\s*(км|mi)/g, '') : null;
-            const distText = rawDistStr ? (rawDistStr + ' ' + distUnit) : (rawData.odometer_trip ? (Number(rawData.odometer_trip).toFixed(1) + ' ' + distUnit) : 'няма данни');
-            const tripBadge = rawData.odometer_trip ? ` (дневен: ${Number(rawData.odometer_trip).toFixed(1)} ${distUnit})` : '';
-            const distanceHtml = `<br><span style="color: var(--text-color);">Изчисленията са на база пробег: <b>${distText}</b>${tripBadge}</span>`;
+            let numDist = calculatedData.distance ? Number(String(calculatedData.distance).replace(/\s*(км|mi)/g, '')) : (rawData.odometer_trip ? Number(rawData.odometer_trip) : null);
+            const distText = (numDist !== null && !isNaN(numDist)) ? (Number.isInteger(numDist) ? (numDist + ' ' + distUnit) : (numDist.toFixed(1) + ' ' + distUnit)) : 'няма данни';
+            let tripVal = rawData.odometer_trip ? Number(rawData.odometer_trip) : null;
+            const tripBadge = tripVal ? ` (дневен: ${Number.isInteger(tripVal) ? tripVal : tripVal.toFixed(1)} ${distUnit})` : '';
+            const distanceHtml = `<hr style="border: none; border-top: 1px solid var(--border-color); margin: 12px 0;"><span style="color: var(--text-color);">Изчисленията са на база пробег: <b>${distText}</b>${tripBadge}</span>`;
             let warningMessage = '';
             if (l_100 > 10) {
                 warningMessage = `<hr style="border: none; border-top: 1px solid var(--border-color); margin: 12px 0;"><span style="color: #c65911; font-weight: bold;">⚠️ Разходът е по-висок от оптималния!</span>`;
@@ -1200,9 +1207,15 @@
                 <button type="button" id="nextHistoryBtn" ${history.length <= 1 ? 'disabled' : ''}>›</button>
             </div>
         `;
-            statusBox.innerHTML = rawDataHtml + `✅ Успешен запис на данните!<br><br>
-            <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} ц/км</b>`
-                + distanceHtml + warningMessage + tripWarningMessage + discrepancyMessage + historyNavHtml;
+            const resultsPanelHtml = `
+            <div style="text-align: center; margin-bottom: 15px; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--input-border-dashed);">
+                ✅ Успешен запис на данните!<br><br>
+                <b>${l_100.toFixed(2)} л/100 км</b> | <b>${eur_100.toFixed(2)} €/100 км</b> | <b>${centsPerKm} ц/км</b>
+                ${distanceHtml}
+                ${warningMessage}
+            </div>
+        `;
+            statusBox.innerHTML = rawDataHtml + resultsPanelHtml + tripWarningMessage + discrepancyMessage + historyNavHtml;
             document.getElementById('prevHistoryBtn').addEventListener('click', () => {
                 if (history.length > 1) {
                     currentHistoryIndex = (currentHistoryIndex > 0) ? currentHistoryIndex - 1 : history.length - 1;
